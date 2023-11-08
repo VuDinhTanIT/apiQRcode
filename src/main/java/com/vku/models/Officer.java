@@ -34,7 +34,7 @@ public class Officer {
 	private String cccd;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "position_code")
-	private Position positionCode;
+	private Position position;
 	private String degree;
 	private String salary;
 	private String allowance;

@@ -18,13 +18,13 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public Student getStudentById(String id) {
+    public Student getStudentByStudentCode(String id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Student not found: " + id));
     }
 
     public Student createStudent(Student student) {
-    	student.setId(null);
+    	student.setStudentCode(null);
         return studentRepository.save(student);
     }
 

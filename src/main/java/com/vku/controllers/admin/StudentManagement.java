@@ -27,7 +27,7 @@ public class StudentManagement {
     @GetMapping("/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") String id) {
         try {
-            Student student = studentService.getStudentById(id);
+            Student student = studentService.getStudentByStudentCode(id);
             return ResponseEntity.ok(student);
         } catch (NoSuchElementException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
@@ -47,8 +47,10 @@ public class StudentManagement {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStudent(@PathVariable("id") String id, @RequestBody Student student) {
         try {
-            Student existingStudent = studentService.getStudentById(id);
-            student.setId(id);
+            Student existingStudent = studentService.getStudentByStudentCode(id);
+            if(existingStudent != null) {
+            	student.setStudentCode(id);
+            }
             Student updatedStudent = studentService.updateStudent(student);
             return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
         } catch (NoSuchElementException e) {
@@ -62,7 +64,7 @@ public class StudentManagement {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable("id") String id) {
-        Student existingStudent = studentService.getStudentById(id);
+        Student existingStudent = studentService.getStudentByStudentCode(id);
         if (existingStudent == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

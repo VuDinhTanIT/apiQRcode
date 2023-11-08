@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.vku.models.Log;
 import com.vku.models.Position;
+import com.vku.services.LogService;
 import com.vku.services.PositionService;
 
 import java.util.List;
@@ -15,7 +17,8 @@ import java.util.List;
 public class PositionController {
 	@Autowired
     private  PositionService positionService;
-
+	@Autowired 
+	private LogService logService;
   
 
     @GetMapping
@@ -36,6 +39,12 @@ public class PositionController {
     @PostMapping
     public ResponseEntity<Position> createPosition(@RequestBody Position position) {
         Position createdPosition = positionService.createPosition(position);
+        Log log = new Log();
+//        log.setActor();
+        log.setLog("Thêm position: "+ position.getPositionCode() + " - " + position.getName() );
+        logService.wirteLog(log);
+        
+        
         return new ResponseEntity<>(createdPosition, HttpStatus.CREATED);
     }
 

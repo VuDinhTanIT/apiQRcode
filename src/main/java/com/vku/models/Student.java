@@ -21,9 +21,6 @@ import lombok.NoArgsConstructor;
 public class Student {
 
 	@Id
-	@Column(name="id")
-	private String id;
-	@Column(name="student_code")
 	private String studentCode;
 	
 	@Column(columnDefinition = "VARCHAR(255)")
