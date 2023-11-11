@@ -25,14 +25,14 @@ public class OfficerService {
     }
 
     public Officer createOfficer(Officer officer) {
+    	officer.setId(0);
+    	officer.setPassDefault();
         // Add any necessary business logic before saving the officer
         return officerRepository.save(officer);
     }
 
     public Officer updateOfficer(int officerId, Officer updatedOfficer) {
         updatedOfficer.setId(officerId);
-        // Update the existing officer with the new data from updatedOfficer
-        // Add any necessary business logic before updating the officer
         return officerRepository.save(updatedOfficer);
     }
 
@@ -41,4 +41,9 @@ public class OfficerService {
         // Add any necessary business logic before deleting the officer
         officerRepository.delete(officer);
     }
+
+	public Officer findByOfficerCode(String username) {
+		// TODO Auto-generated method stub
+		return officerRepository.findByOfficerCode(username);
+	}
 }

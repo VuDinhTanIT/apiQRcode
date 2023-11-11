@@ -7,5 +7,7 @@ import com.vku.models.Officer;
 
 @Repository
 public interface OfficerRepository extends JpaRepository<Officer, Integer> {
+
+	Officer findByOfficerCode(String officerCode);
     // Các phương thức tùy chỉnh khác có thể được khai báo ở đây nếu cần
 }

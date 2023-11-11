@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vku.dtos.ErrorResponse;
+import com.vku.models.Log;
 import com.vku.models.Officer;
+import com.vku.services.LogService;
 import com.vku.services.OfficerService;
 
 @RestController
@@ -25,6 +27,8 @@ public class OfficerManagement {
 
    @Autowired
    private OfficerService officerService;
+   @Autowired
+   private LogService logService;
     @GetMapping
     public List<Officer> getAllOfficers() {
         return officerService.getAllOfficers();
@@ -37,14 +41,27 @@ public class OfficerManagement {
 
     @PostMapping
     public Officer createOfficer(@RequestBody Officer officer) {
-        return officerService.createOfficer(officer);
+    	Officer officerCreated =  officerService.createOfficer(officer);
+    	if(officer != null ) {
+    		Log log = new Log();
+//          log.setActor();
+          log.setLog("Thêm officer: "+ officer.getOfficerCode() + " - " + officer.getName() );
+          logService.wirteLog(log);
+    	}
+        return officerCreated ;
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateOfficer(@PathVariable("id") int officerId, @RequestBody Officer updatedOfficer) {
 //        return officerService.updateOfficer(officerId, updatedOfficer);
+    	Log log = new Log();
         try {
         	Officer officer = officerService.getOfficerById(officerId);
+        	if(officer != null ) {
+//              log.setActor();
+              log.setLog("Sửa officer với id: " + officerId +" - mã cán bộ:"+ officer.getOfficerCode() + " - " + officer.getName() );
+              logService.wirteLog(log);
+        	}
         	return new ResponseEntity<>(officerService.updateOfficer(officerId, updatedOfficer), HttpStatus.OK);
           
         } catch (NoSuchElementException e) {
@@ -52,6 +69,8 @@ public class OfficerManagement {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         } catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse("Đã xảy ra lỗi", 500);
+            log.setLog("Sửa thất bại với id: " + officerId +  " - " + e.getMessage());
+            logService.wirteLog(log);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }

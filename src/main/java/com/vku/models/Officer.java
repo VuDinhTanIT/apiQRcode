@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.vku.services.PasswordEncryptor;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,9 +30,12 @@ public class Officer {
 	private int id;
 	@Column(name= "officer_code")
 	private String officerCode;
+	@JsonIgnore
+	private String password;
 	private String name;
 	private String email;
 	private String cccd;
+	private String phoneNumber;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "position_code")
 	private Position position;
@@ -46,4 +50,7 @@ public class Officer {
 	
 	@Column(name = "update_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", updatable = true, nullable = false)
 	private Timestamp updateTime;	
+	public void setPassDefault() {
+		password = PasswordEncryptor.encryptPassword(officerCode + "_" + phoneNumber);
+	}
 }

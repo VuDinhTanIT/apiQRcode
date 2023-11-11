@@ -24,7 +24,8 @@ public class StudentService {
     }
 
     public Student createStudent(Student student) {
-    	student.setStudentCode(null);
+    	
+    	student.setPassDefault();
         return studentRepository.save(student);
     }
 
@@ -35,4 +36,9 @@ public class StudentService {
     public void deleteStudent(String id) {
         studentRepository.deleteById(id);
     }
+
+	public Student findByStudentCode(String username) {
+		// TODO Auto-generated method stub
+		return studentRepository.findByStudentCode(username);
+	}
 }

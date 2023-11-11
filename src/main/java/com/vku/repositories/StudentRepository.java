@@ -8,5 +8,8 @@ import com.vku.models.Student;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, String>, JpaSpecificationExecutor<Student> {
+
     // Các phương thức tùy chỉnh khác có thể được khai báo ở đây nếu cần
+
+	Student findByStudentCode(String studentCode);
 }
