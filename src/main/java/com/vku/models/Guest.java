@@ -28,7 +28,9 @@ public class Guest {
 	private String phoneNumber;
 	private String organization;
 	private String purpose;
-	private String licensePlate;
+	private String eventId;
+	private String otherEvent;
+	@Column(columnDefinition = "text")
 	private String QRCodeImage;
 	private boolean status;
 

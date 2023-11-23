@@ -26,12 +26,13 @@ public class Student {
 
 	@Id
 	private String studentCode;
-	@JsonIgnore
+//	@JsonIgnore
 	private String password;
 	@Column(columnDefinition = "VARCHAR(255)")
 	private String cccd;
 	@Column(columnDefinition = "VARCHAR(60)")
 	private String name;
+	private  String birthDay;
 	@Column(columnDefinition = "VARCHAR(60)")
 	private String email;
 	@Column(columnDefinition = "VARCHAR(20)")
@@ -55,6 +56,6 @@ public class Student {
 	@Column(name = "update_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", updatable = true, nullable = false)
 	private Timestamp updateTime;
 	public void setPassDefault() {
-		password = PasswordEncryptor.encryptPassword(studentCode + "_" + phoneNumber);
+		password = PasswordEncryptor.encryptPassword(studentCode + "_" + cccd);
 	}
 }

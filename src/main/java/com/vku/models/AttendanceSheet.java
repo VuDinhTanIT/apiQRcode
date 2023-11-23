@@ -28,13 +28,10 @@ public class AttendanceSheet {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String name;
+	private String lessonContent;
 	
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "course_id", nullable = false)
 	@NotNull
-	private Course course;
-	private boolean extra_sheet;
+	private Long courseId;
 	private boolean status;
 	private String teachDate ;
 	@Column(name = "create_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false, nullable = false)
@@ -42,7 +39,4 @@ public class AttendanceSheet {
 	
 	@Column(name = "update_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", updatable = true, nullable = false)
 	private Timestamp updateTime;
-	
-	
-
 }

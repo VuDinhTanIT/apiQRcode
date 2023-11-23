@@ -18,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/guests")
+@RequestMapping("api/guests")
 public class GuestController {
 	@Autowired
 	private GuestService guestService;
 	@Autowired
 	private QRcode qRcode;
-
+	
 	@GetMapping
 	public ResponseEntity<List<Guest>> getAllGuests() {
 		List<Guest> guests = guestService.getAllGuests();
@@ -63,19 +63,27 @@ public class GuestController {
 //        return new ResponseEntity<>(createdGuest, HttpStatus.CREATED);
 //    }
 	// tạo mã QR cho khách mời
-	@PostMapping
-	public String generateQRcodeForGuest(@RequestBody Guest guest, HttpServletRequest request) throws Exception {
+	@PutMapping("/createQR")
+	public ResponseEntity<Guest> generateQRcodeForGuest(@RequestBody Guest guest, HttpServletRequest request) throws Exception {
 //    	HttpServletRequest request = null;
-		Guest createdGuest = guestService.createGuest(guest);
+//		Guest createdGuest = guestService.createGuest(guest);
 		// Trả về link call api gọi đến guest vừa tạo
 
-		String content = request.getRequestURI() + "/" + createdGuest.getId();
+		String content = String.valueOf(guest.getId());
 
 		String qrCodeImageBase64 = qRcode.generateQRcodeWithExpirationDays(content, request, guest.getCccd(), 1);
+		guest.setQRCodeImage(qrCodeImageBase64);
+//		guestService.updateGuest(guest);
 //        return new ResponseEntity<>(createdGuest, HttpStatus.CREATED);
-		return qrCodeImageBase64;
+		return ResponseEntity.ok(guestService.updateGuest(guestService.updateGuest(guest)));
 	}
-
+	@PostMapping
+	public ResponseEntity<Guest> createGuest(@RequestBody Guest guest, HttpServletRequest request) throws Exception {
+//    	HttpServletRequest request = null;
+		Guest createdGuest = guestService.createGuest(guest);
+        return new ResponseEntity<>(createdGuest, HttpStatus.CREATED);
+//		return qrCodeImageBase64;
+	}
 	@PutMapping("/{id}")
 	public ResponseEntity<Guest> updateGuest(@PathVariable("id") int id, @RequestBody Guest guest) {
 		Guest existingGuest = guestService.getGuestById(id);

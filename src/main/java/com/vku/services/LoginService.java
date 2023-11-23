@@ -38,13 +38,19 @@ public class LoginService {
 	public Officer loginAdmin(String username, String password) {
 	    // Kiểm tra xem username có tồn tại trong lớp Officer hay không	
 	    Officer officer = officerService.findByOfficerCode(username);
+	    if(officer == null ) {
+	    	return null;
+	    }
 	    String decodedPass = PasswordEncryptor.decryptPassword(officer.getPassword());
 
 	    return decodedPass.equals(password)  ? officer : null;
 	}
-	private Student loginStudent(String username, String password) {
+	public Student loginStudent(String username, String password) {
 	    // Kiểm tra xem username có tồn tại trong lớp Student hay không	
 	    Student student = studentService.findByStudentCode(username);
+	    if(student == null ) {
+	    	return null;
+	    }
 	    String decodedPass = PasswordEncryptor.decryptPassword(student.getPassword());
 //	    System.out.println("decodedpass: " + decodedPass + "- " +decodedPass.equals(password));
 	    return decodedPass.equals(password) ? student : null;
@@ -57,4 +63,6 @@ public class LoginService {
 	        return STUDENT;
 	    }
 	}
+
+	
 }

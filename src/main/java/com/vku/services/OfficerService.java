@@ -27,6 +27,7 @@ public class OfficerService {
     public Officer createOfficer(Officer officer) {
     	officer.setId(0);
     	officer.setPassDefault();
+    	officer.setStatus(true);
         // Add any necessary business logic before saving the officer
         return officerRepository.save(officer);
     }

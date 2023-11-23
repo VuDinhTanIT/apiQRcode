@@ -36,6 +36,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Pattern;
+
 import javax.imageio.ImageIO;
 
 import com.google.zxing.BarcodeFormat;
@@ -153,6 +155,8 @@ public class QRcode {
 //	    headers.setContentType(MediaType.IMAGE_PNG);
 //	    return new ResponseEntity<>(Files.readAllBytes(Path.of(qcodePath)), headers, HttpStatus.OK);
 //	}
+	
+	
 	@PostMapping(value = "/testQRCode", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, String> generateQRCode(@RequestBody Map<String, String> requestData, HttpServletRequest request)
@@ -185,7 +189,7 @@ public class QRcode {
 			throws Exception {
 		String applicationPath = request.getServletContext().getRealPath("");
 		String upload_dir = "uploads";
-		String uploadFilePath = applicationPath + File.separator + upload_dir + File.separator;
+		String uploadFilePath = applicationPath + upload_dir + File.separator;
 		String qcodePath = uploadFilePath + nameQRcode + "-QRCode.png";
 		System.out.println("acodePath: " + qcodePath);
 		Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
@@ -213,16 +217,22 @@ public class QRcode {
 
 		byte[] qrCodeImageBytes = Files.readAllBytes(Path.of(qcodePath));
 		String qrCodeImageBase64 = Base64.getEncoder().encodeToString(qrCodeImageBytes);
-		System.out.println("QR Code with Logo Generated Successfully");
+//		System.out.println("QR Code with Logo Generated Successfully");
 
 		return qrCodeImageBase64;
 
 	}
 
 	public String generateQRcodeWithExpirationDays(String content, HttpServletRequest request, String nameQRcode,
-			int expirationDays) throws Exception {
+			int expirations) throws Exception {
 		// Tính toán thời gian hết hạn bằng cách thêm số ngày vào thời gian hiện tại
-		LocalDateTime expirationTime = LocalDateTime.now().plusDays(expirationDays);
+		LocalDateTime expirationTime = null;
+		if (content.contains("|")) {
+			expirationTime = LocalDateTime.now().plusHours(expirations);
+
+		} else {
+			expirationTime = LocalDateTime.now().plusDays(expirations);
+		}
 
 		// Convert expiration time to a string representation
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -231,6 +241,7 @@ public class QRcode {
 		// Append expiration time to the content
 		String contentWithExpirationTime = content + "|" + expirationTimeString;
 		System.out.println("contentWithExpirationTime: " + contentWithExpirationTime);
+//		System.out.println("isQRCodeValid: "+  isQRCodeValid(contentWithExpirationTime));
 		return generateQRcodeWithLogo(contentWithExpirationTime, request, nameQRcode);
 		// Generate QR code with the modified content
 
@@ -238,14 +249,17 @@ public class QRcode {
 
 	public boolean isQRCodeValid(String qrCodeContent) {
 		// Split the QR code content into the original content and the expiration time
-		String[] parts = qrCodeContent.split("\\|");
-		if (parts.length != 2) {
+		String[] parts = qrCodeContent.trim().split("\\|");
+//		String[] parts = qrCodeContent.trim().split(Pattern.quote(" | "),-1);
+
+		if (parts.length < 2) {
 			// QR code does not contain the required information
 			return false;
 		}
 
-		String originalContent = parts[0];
-		String expirationTimeString = parts[1];
+//		String originalContent = parts[0];
+		System.out.println("parts :" + parts[0]+ " - " + parts[1]+ " - " +parts[2] +"length : " + parts.length);
+		String expirationTimeString = parts[parts.length - 1];
 
 		// Parse the expiration time string into LocalDateTime
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -253,7 +267,7 @@ public class QRcode {
 
 		// Check if the current time is before the expiration time
 		LocalDateTime currentTime = LocalDateTime.now();
-		return currentTime.isBefore(expirationTime);
+		return currentTime.plusHours(3).isBefore(expirationTime);
 	}
 
 	private static BufferedImage resizeImage(BufferedImage image, int width, int height) {

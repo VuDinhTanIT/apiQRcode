@@ -8,6 +8,8 @@ import com.vku.dtos.ErrorResponse;
 import com.vku.models.Student;
 import com.vku.services.StudentService;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -71,4 +73,14 @@ public class StudentManagement {
         studentService.deleteStudent(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+	@PostMapping("/addList")
+	public ResponseEntity<String> addList(@RequestBody @Valid List<Student> students) {
+
+		for (Student student : students) {
+//			student.setCreateTime(new Timestamp(System.currentTimeMillis()));
+//			student.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+			studentService.createStudent(student);
+		}
+		return ResponseEntity.ok("OK");
+	}
 }

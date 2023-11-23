@@ -16,31 +16,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vku.dtos.ErrorResponse;
-import com.vku.models.AttendanceSheet;
-import com.vku.services.AttendanceSheetService;
+import com.vku.models.DetailAttendance;
+import com.vku.services.DetailAttendanceService;
 
 @RestController
-@RequestMapping("/attendance-sheets")
-public class AttendanceSheetController {
+@RequestMapping("/detail-attendance")
+public class DetailAttendanceController {
 	@Autowired
-    private AttendanceSheetService attendanceSheetService;
+    private DetailAttendanceService detailAttendanceService;
 
-    public AttendanceSheetController(AttendanceSheetService attendanceSheetService) {
+    public DetailAttendanceController(DetailAttendanceService detailAttendanceService) {
     	
-        this.attendanceSheetService = attendanceSheetService;
+        this.detailAttendanceService = detailAttendanceService;
     }
 
     @GetMapping
-    public ResponseEntity<List<AttendanceSheet>> getAllAttendanceSheets() {
-        List<AttendanceSheet> attendanceSheets = attendanceSheetService.getAllAttendanceSheets();
-        return new ResponseEntity<>(attendanceSheets, HttpStatus.OK);
+    public ResponseEntity<List<DetailAttendance>> getAllDetailAttendances() {
+        List<DetailAttendance> detailAttendances = detailAttendanceService.getAllDetailAttendances();
+        return new ResponseEntity<>(detailAttendances, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAttendanceSheetById(@PathVariable("id") Long id) {
+    public ResponseEntity<?> getDetailAttendanceById(@PathVariable("id") Long id) {
         try {
-            AttendanceSheet attendanceSheet = attendanceSheetService.getAttendanceSheetById(id);
-            return ResponseEntity.ok(attendanceSheet);
+            DetailAttendance detailAttendance = detailAttendanceService.getDetailAttendanceById(id);
+            return ResponseEntity.ok(detailAttendance);
         } catch (NoSuchElementException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -51,19 +51,19 @@ public class AttendanceSheetController {
     }
 
     @PostMapping
-    public ResponseEntity<AttendanceSheet> createAttendanceSheet(@RequestBody AttendanceSheet attendanceSheet) {
-        AttendanceSheet createdAttendanceSheet = attendanceSheetService.createAttendanceSheet(attendanceSheet);
-        return new ResponseEntity<>(createdAttendanceSheet, HttpStatus.CREATED);
+    public ResponseEntity<DetailAttendance> createDetailAttendance(@RequestBody DetailAttendance detailAttendance) {
+        DetailAttendance createdDetailAttendance = detailAttendanceService.createDetailAttendance(detailAttendance);
+        return new ResponseEntity<>(createdDetailAttendance, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAttendanceSheet(@PathVariable("id") Long id, @RequestBody AttendanceSheet attendanceSheet) {
+    public ResponseEntity<?> updateDetailAttendance(@PathVariable("id") Long id, @RequestBody DetailAttendance detailAttendance) {
         try {
-        	attendanceSheetService.getAttendanceSheetById(id);
+        	detailAttendanceService.getDetailAttendanceById(id);
         	
-        	attendanceSheet.setId(id);
-        	AttendanceSheet updatedAttendanceSheet = attendanceSheetService.updateAttendanceSheet(attendanceSheet);
-        	return new ResponseEntity<>(updatedAttendanceSheet, HttpStatus.OK);
+        	detailAttendance.setId(id);
+        	DetailAttendance updatedDetailAttendance = detailAttendanceService.updateDetailAttendance(detailAttendance);
+        	return new ResponseEntity<>(updatedDetailAttendance, HttpStatus.OK);
         } catch (NoSuchElementException e) {
 //            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -74,12 +74,12 @@ public class AttendanceSheetController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAttendanceSheet(@PathVariable("id") Long id) {
-        AttendanceSheet existingAttendanceSheet = attendanceSheetService.getAttendanceSheetById(id);
-        if (existingAttendanceSheet == null) {
+    public ResponseEntity<Void> deleteDetailAttendance(@PathVariable("id") Long id) {
+        DetailAttendance existingDetailAttendance = detailAttendanceService.getDetailAttendanceById(id);
+        if (existingDetailAttendance == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        attendanceSheetService.deleteAttendanceSheet(id);
+        detailAttendanceService.deleteDetailAttendance(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

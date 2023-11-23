@@ -22,6 +22,9 @@ public class EventService {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Event not found: " + id));
     }
+//    public Event getEvnetByIdStr(String id) {
+//    	return getEventById(Integer.parseInt(id));
+//    }
 
     public Event createEvent(Event event) {
         return eventRepository.save(event);

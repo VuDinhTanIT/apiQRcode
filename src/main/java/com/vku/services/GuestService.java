@@ -12,28 +12,31 @@ import java.util.NoSuchElementException;
 @Service
 public class GuestService {
 	@Autowired
-    private GuestRepository guestRepository;
+	private GuestRepository guestRepository;
 
+	public List<Guest> getAllGuests() {
+		return guestRepository.findAll();
+	}
 
-    public List<Guest> getAllGuests() {
-        return guestRepository.findAll();
-    }
+	public Guest getGuestById(int id) {
+		return guestRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Resource not found: " + id));
+	}
 
-    public Guest getGuestById(int id) {
-        return guestRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Resource not found: " + id));
-    }
+	public Guest createGuest(Guest guest) {
+		guest.setId(0);
+		return guestRepository.save(guest);
+	}
 
-    public Guest createGuest(Guest guest) {
-    	guest.setId(0);
-    	return guestRepository.save(guest);
-    }
+	public Guest updateGuest(Guest guest) {
+		return guestRepository.save(guest);
+	}
 
-    public Guest updateGuest(Guest guest) {
-        return guestRepository.save(guest);
-    }
+	public Guest loginByPhoneNumberAndCccd(String phoneNumber, String cccd) {
+		// TODO Auto-generated method stub
+		return guestRepository.findByPhoneNumberAndCccd(phoneNumber, cccd);
+	}
 
-    
-    public void deleteGuest(int id) {
-        guestRepository.deleteById(id);
-    }
+	public void deleteGuest(int id) {
+		guestRepository.deleteById(id);
+	}
 }

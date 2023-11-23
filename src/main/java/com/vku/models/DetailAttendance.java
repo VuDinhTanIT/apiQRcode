@@ -19,17 +19,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
-public class Student_Course {
+public class DetailAttendance {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String studentCode;
-	
-	private Long courseId;
-	@Column(nullable = true)
-	private boolean extraSheet;
-
+		
+	private Long attendanceSheetId;
 	private boolean status;
 	@Column(name = "create_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false, nullable = false)
 	private Timestamp createTime;

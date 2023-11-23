@@ -30,7 +30,7 @@ public class Officer {
 	private int id;
 	@Column(name= "officer_code")
 	private String officerCode;
-	@JsonIgnore
+//	@JsonIgnore
 	private String password;
 	private String name;
 	private String email;

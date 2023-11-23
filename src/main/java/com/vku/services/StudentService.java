@@ -26,6 +26,7 @@ public class StudentService {
     public Student createStudent(Student student) {
     	
     	student.setPassDefault();
+    	student.setStatus(true);
         return studentRepository.save(student);
     }
 
