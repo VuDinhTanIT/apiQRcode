@@ -9,18 +9,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.vku.controllers.QRcode;
+import com.vku.dtos.ErrorResponse;
 import com.vku.models.AttendanceSheet;
 import com.vku.models.DetailAttendance;
+import com.vku.models.Student;
 import com.vku.models.Student_Course;
 import com.vku.services.AttendanceSheetService;
 import com.vku.services.DetailAttendanceService;
+import com.vku.services.StudentService;
 import com.vku.services.Student_CourseService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,56 +38,61 @@ public class StudentController {
 	@Autowired
 	private QRcode qrCode;
 	@Autowired
-	private AttendanceSheetService attendanceSheetService;
+	private StudentService studentService;
 	@Autowired
 	private DetailAttendanceService detailAttendanceService; 
-	// Cập nhập cho điểm danh phụ với courseId thành true
-	@PutMapping("/extraSheet/{courseId}")
-	public ResponseEntity<?> setExtraSheetFalseWithCourseId(@PathVariable("courseId") Long courseId) {
+
+	
+	
+	@PostMapping("/scanAttendanceQR")
+	public ResponseEntity<?> ScanAttendanceQRcode(@RequestParam("studentCode") String studentCode,@RequestParam("QRcodeInfo") String QRcodeInfo,
+			HttpServletRequest request) throws Exception {
+		
 		try {
-//			List<Student_Course> listStudent_CoursesWithCoureId = student_CourseService
-//					.getStudentCourseWithCourseId(courseId);
-//			for (Student_Course student_Course : listStudent_CoursesWithCoureId) {
-//				if(!student_Course.isExtraSheet()) {
-//					
-//					student_Course.setExtraSheet(true);
-//					student_CourseService.updateStudent_Course(student_Course);
-//				}
-//			}
-			student_CourseService.setExtraSheetWithCourseId(courseId, false);
-			return ResponseEntity.ok(true);
-		} catch (NoSuchElementException e) {
+			boolean isValid = qrCode.isQRCodeValid(QRcodeInfo);
+			if(!isValid) {
+				throw new Exception("Time out");
+			}
+			String courseId = QRcodeInfo.trim().split("\\|")[0];
+			student_CourseService.setExtraSheetWithCourseIdAndStudentCode(Long.parseLong(courseId),studentCode, true);
+			return new ResponseEntity<>(true, HttpStatus.OK);		
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+//			System.out.println(e.getMessage());
 			return ResponseEntity.ok(false);
-		} catch (Exception e) {
-			return ResponseEntity.ok(false);
-		}
+			
+		} 
 	}
+	 @GetMapping("/{id}")
+	    public ResponseEntity<?> getStudentById(@PathVariable("id") String id) {
+	        try {
+	            Student student = studentService.getStudentByStudentCode(id);
+	            return ResponseEntity.ok(student);
+	        } catch (NoSuchElementException e) {
+	            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	        } catch (Exception e) {
+	            ErrorResponse errorResponse = new ErrorResponse("An error occurred", 500);
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+	        }
+	    }
 
-//	@PostMapping("/attendanceQR")
-//	public ResponseEntity<?> createSheetQRcode(@RequestParam("courseId") String courseId,@RequestParam("lessonContent") String lessonContent,
-//			HttpServletRequest request) throws Exception {
-//		LocalDateTime attendanceDate = LocalDateTime.now();
-//		System.out.println("attendanceDate: " + attendanceDate);
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//		AttendanceSheet attendanceSheet = new AttendanceSheet();
-//		attendanceSheet.setCourseId(Long.parseLong(courseId));
-//		attendanceSheet.setLessonContent(lessonContent);
-//		attendanceSheet.setTeachDate(attendanceDate.format(formatter));
-//		try {
-//			setExtraSheetTrueWithCourseId(Long.parseLong(courseId));
-//			AttendanceSheet attendanceSheetCreated = attendanceSheetService.createAttendanceSheet(attendanceSheet);
-//			String QRcodeInfo = attendanceSheetCreated.getId() + "|" + attendanceDate.format(formatter);
-//			String attendanceQRImageBase64 = qrCode.generateQRcodeWithExpirationDays(QRcodeInfo, request,
-//					attendanceSheetCreated.getId()+"" , 2);
-////        Student_Course createdStudent_Course = student_CourseService.createStudent_Course(Student_Course);
-//			
-//			return new ResponseEntity<>(attendanceQRImageBase64, HttpStatus.OK);
-//			
-//		}catch (Exception e) {
-//			// TODO: handle exception
-//			return ResponseEntity.ok(null);
-//			
-//		} 
-//	}
-
+	    @PutMapping("/{id}")
+	    public ResponseEntity<?> updateStudent(@PathVariable("id") String id, @RequestBody Student student) {
+	        try {
+	            Student existingStudent = studentService.getStudentByStudentCode(id);
+	            if(existingStudent != null) {
+	            	student.setStudentCode(id);
+	            }
+	            Student updatedStudent = studentService.updateStudent(student);
+	            return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
+	        } catch (NoSuchElementException e) {
+	            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	        } catch (Exception e) {
+	            ErrorResponse errorResponse = new ErrorResponse("An error occurred", 500);
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+	        }
+	    }
 }

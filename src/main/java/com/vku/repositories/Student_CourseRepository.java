@@ -27,12 +27,12 @@ public interface Student_CourseRepository extends JpaRepository<Student_Course, 
 
 	@Modifying
 	@Query("UPDATE Student_Course sc SET sc.extraSheet = :bool  WHERE sc.courseId = :courseId")
-	void updateExtraSheetByCourseIdAndStudentCode(@Param("courseId") Long courseId, @Param("bool") boolean bool);
+	void updateExtraSheetByCourseId(@Param("courseId") Long courseId, @Param("bool") boolean bool);
 
 	@Modifying
-	@Query("UPDATE Student_Course sc SET sc.extraSheet = true WHERE sc.courseId = :courseId AND sc.studentCode = :studentCode")
+	@Query("UPDATE Student_Course sc SET sc.extraSheet = :bool WHERE sc.courseId = :courseId AND sc.studentCode = :studentCode")
 	void updateExtraSheetByCourseIdAndStudentCode(@Param("courseId") Long courseId,
-			@Param("studentCode") String studentCode);
+			@Param("studentCode") String studentCode, @Param("bool") boolean bool);
 
 	@Modifying
 	@Query("SELECT d FROM Student_Course d WHERE d.courseId = :courseId AND d.updateTime > :t")

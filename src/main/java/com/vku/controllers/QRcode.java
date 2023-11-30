@@ -251,12 +251,10 @@ public class QRcode {
 		// Split the QR code content into the original content and the expiration time
 		String[] parts = qrCodeContent.trim().split("\\|");
 //		String[] parts = qrCodeContent.trim().split(Pattern.quote(" | "),-1);
-
 		if (parts.length < 2) {
 			// QR code does not contain the required information
 			return false;
 		}
-
 //		String originalContent = parts[0];
 		System.out.println("parts :" + parts[0]+ " - " + parts[1]+ " - " +parts[2] +"length : " + parts.length);
 		String expirationTimeString = parts[parts.length - 1];
@@ -267,7 +265,7 @@ public class QRcode {
 
 		// Check if the current time is before the expiration time
 		LocalDateTime currentTime = LocalDateTime.now();
-		return currentTime.plusHours(3).isBefore(expirationTime);
+		return currentTime.isBefore(expirationTime);
 	}
 
 	private static BufferedImage resizeImage(BufferedImage image, int width, int height) {
