@@ -32,19 +32,15 @@ public class Course {
 	private String schoolYear;
 	private int semester;
 	private boolean status;
-
 	private String qrCodeImageBase64;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "lecturer_id")
 	private Officer officer;
-	
-	
+
 	@Column(name = "create_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false, nullable = false)
 	private Timestamp createTime;
 	
 	@Column(name = "update_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", updatable = true, nullable = false)
 	private Timestamp updateTime;
 	
-	
-
 }

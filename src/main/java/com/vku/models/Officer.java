@@ -42,6 +42,7 @@ public class Officer {
 	private String degree;
 	private String salary;
 	private String allowance;
+	@Column(columnDefinition = "text")
 	private String QRCodeImage;
 	private boolean status;
 

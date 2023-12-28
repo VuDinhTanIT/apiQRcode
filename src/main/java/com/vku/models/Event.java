@@ -24,7 +24,8 @@ public class Event {
 	private String location;
 	private String period;
 	private boolean status;
-
+	@Column(columnDefinition = "text")
+	private String QRCodeEvent;
 	@Column(name = "create_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false, nullable = false)
 	private Timestamp createTime;
 	

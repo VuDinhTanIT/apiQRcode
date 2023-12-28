@@ -18,14 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.vku.controllers.QRcode;
+import com.vku.dtos.AttendanceQRResponseDTO;
 import com.vku.dtos.ErrorResponse;
 import com.vku.models.AttendanceSheet;
+import com.vku.models.Course;
 import com.vku.models.DetailAttendance;
 import com.vku.models.Guest;
 import com.vku.models.Log;
 import com.vku.models.Officer;
+import com.vku.models.Student;
 import com.vku.models.Student_Course;
 import com.vku.services.AttendanceSheetService;
+import com.vku.services.CourseService;
 import com.vku.services.DetailAttendanceService;
 import com.vku.services.GuestService;
 import com.vku.services.OfficerService;
@@ -48,6 +52,38 @@ public class OfficerController {
 	private OfficerService officerService;
 	@Autowired
 	private GuestService guestService;
+	@Autowired
+	private CourseService courseService;
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Officer> getOfficerById(@PathVariable("id") int officerId) {
+		return ResponseEntity.ok(officerService.getOfficerById(officerId));
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<?> updateOfficer(@PathVariable("id") int officerId, @RequestBody Officer updatedOfficer) {
+//		Log log = new Log();
+		try {
+			Officer officer = officerService.getOfficerById(officerId);
+//			if (officer != null) {
+//	              log.setActor();
+//				log.setLog("Sửa officer với id: " + officerId + " - mã cán bộ:" + officer.getOfficerCode() + " - "
+//						+ officer.getName());
+//				logService.wirteLog(log);
+//			}
+			return new ResponseEntity<>(officerService.updateOfficer(officerId, updatedOfficer), HttpStatus.OK);
+
+		} catch (NoSuchElementException e) {
+			ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+		} catch (Exception e) {
+			ErrorResponse errorResponse = new ErrorResponse("Đã xảy ra lỗi", 500);
+//			log.setLog("Sửa thất bại với id: " + officerId + " - " + e.getMessage());
+//			logService.wirteLog(log);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+		}
+	}
+
 	// Cập nhập cho điểm danh phụ với courseId thành true
 	@PutMapping("/extraSheet/{courseId}")
 	public ResponseEntity<?> setExtraSheetFalseWithCourseId(@PathVariable("courseId") Long courseId) {
@@ -60,11 +96,12 @@ public class OfficerController {
 			return ResponseEntity.ok(false);
 		}
 	}
+
 // Quét mã QR khách đên
 	@PostMapping("/scanQRForGuest")
 	public ResponseEntity<?> scanQRcode(@RequestParam("QRcode") String QRcode) {
 		try {
-			if(!qrCode.isQRCodeValid(QRcode)) {
+			if (!qrCode.isQRCodeValid(QRcode)) {
 				throw new Exception("Time out");
 			}
 			String guestId = QRcode.trim().split("\\|")[0];
@@ -78,7 +115,24 @@ public class OfficerController {
 			return ResponseEntity.ok(false);
 		}
 	}
-	
+
+	// Lấy danh sách lớp học phần theo id giảng viên
+	@GetMapping(value = { "/getCoursesByOfficerId/{officerId}", "course/{officerId}" })
+	public ResponseEntity<List<Course>> getCourseById(@PathVariable("officerId") int officerId) {
+		List<Course> listCourses = courseService.getCoursesByOfficerId(officerId);
+		if (listCourses == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return ResponseEntity.ok(listCourses);
+	}
+
+	// Lấy thông tin SV từ mã SV
+	@GetMapping("/getStudentByStudentCode/{studentCode}")
+	public ResponseEntity<Student> getStudentByStudentCode(@PathVariable("studentCode") String studentCode) {
+
+		return ResponseEntity.ok(null);
+	}
+
 	@PostMapping("/attendanceQR")
 	public ResponseEntity<?> createSheetQRcode(@RequestParam("courseId") Long courseId,
 			@RequestParam("lessonContent") String lessonContent, HttpServletRequest request) throws Exception {
@@ -94,11 +148,39 @@ public class OfficerController {
 			student_CourseService.setExtraSheetWithCourseId(courseId, false);
 			AttendanceSheet attendanceSheetCreated = attendanceSheetService.createAttendanceSheet(attendanceSheet);
 			String QRcodeInfo = courseId + "|" + attendanceDate.format(formatter);
+			int expirationHours = 2;
 			String attendanceQRImageBase64 = qrCode.generateQRcodeWithExpirationDays(QRcodeInfo, request,
-					attendanceSheetCreated.getId() + "", 2);
+					"attendanceQR", expirationHours);
+			AttendanceQRResponseDTO responseDTO = new AttendanceQRResponseDTO();
+	        responseDTO.setAttendanceId(attendanceSheetCreated.getId());
+	        responseDTO.setAttendanceQRImageBase64(attendanceQRImageBase64);
+//        Student_Course createdStudent_Course = student_CourseService.createStudent_Course(Student_Course);
+			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return ResponseEntity.ok(false);
+
+		}
+	}
+
+	// Điểm danh bình thường
+	@PostMapping("/attendanceNormal")
+	public ResponseEntity<?> createNormalAttendance(@RequestParam("courseId") Long courseId,
+			@RequestParam("lessonContent") String lessonContent, HttpServletRequest request) throws Exception {
+		LocalDateTime attendanceDate = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		AttendanceSheet attendanceSheet = new AttendanceSheet();
+		attendanceSheet.setId(null);
+		attendanceSheet.setCourseId(courseId);
+		attendanceSheet.setLessonContent(lessonContent);
+		attendanceSheet.setTeachDate(attendanceDate.format(formatter));
+		try {
+//			setExtraSheetFalseWithCourseId(courseId);
+			student_CourseService.setExtraSheetWithCourseId(courseId, true);
+			AttendanceSheet attendanceSheetCreated = attendanceSheetService.createAttendanceSheet(attendanceSheet);
 //        Student_Course createdStudent_Course = student_CourseService.createStudent_Course(Student_Course);
 
-			return new ResponseEntity<>(attendanceQRImageBase64, HttpStatus.OK);
+			return new ResponseEntity<>(attendanceSheetCreated.getId(), HttpStatus.OK);
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -147,7 +229,9 @@ public class OfficerController {
 							.getFirstByAttendanceIdWithLatestUpdateTime(attendanceId).getUpdateTime());
 			System.out.println("studentList: " + listStudent_CoursesWithCoureId);
 
+			//
 			for (Student_Course student_Course : listStudent_CoursesWithCoureId) {
+				// Nếu mà sv đó vắng thì chèn vào bảng điểm danh chi tiết
 				if (!student_Course.isExtraSheet()) {
 					DetailAttendance detailAttendance = new DetailAttendance();
 //					detailAttendance.setId(null);
@@ -175,32 +259,4 @@ public class OfficerController {
 		}
 	}
 
-	@GetMapping("/{id}")
-	public Officer getOfficerById(@PathVariable("id") int officerId) {
-		return officerService.getOfficerById(officerId);
-	}
-
-	@PutMapping("/{id}")
-	public ResponseEntity<?> updateOfficer(@PathVariable("id") int officerId, @RequestBody Officer updatedOfficer) {
-//		Log log = new Log();
-		try {
-			Officer officer = officerService.getOfficerById(officerId);
-//			if (officer != null) {
-//	              log.setActor();
-//				log.setLog("Sửa officer với id: " + officerId + " - mã cán bộ:" + officer.getOfficerCode() + " - "
-//						+ officer.getName());
-//				logService.wirteLog(log);
-//			}
-			return new ResponseEntity<>(officerService.updateOfficer(officerId, updatedOfficer), HttpStatus.OK);
-
-		} catch (NoSuchElementException e) {
-			ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-		} catch (Exception e) {
-			ErrorResponse errorResponse = new ErrorResponse("Đã xảy ra lỗi", 500);
-//			log.setLog("Sửa thất bại với id: " + officerId + " - " + e.getMessage());
-//			logService.wirteLog(log);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-		}
-	}
 }

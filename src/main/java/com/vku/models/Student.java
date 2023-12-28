@@ -47,6 +47,7 @@ public class Student {
 	private String className;
 	@Column(columnDefinition = "VARCHAR(255)")
 	private String groupCodes;
+	@Column(columnDefinition = "text")
 	private String QRCodeImage;
 	private boolean status;
 

@@ -1,54 +1,31 @@
 package com.vku.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.FileSystems;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import ch.qos.logback.core.model.Model;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,51 +35,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 public class QRcode {
 
-	private final String DIR = "D:\\2_INTERN";
-	private final String ext = ".png";
-	private final String LOGO = "https://vku.udn.vn/images/logo_icon.png";
-	private final int WIDTH = 300;
-	private final int HEIGHT = 300;
-
-	@Autowired
-	private ResourceLoader resourceLoader;
+//	private final String LOGO = "https://vku.udn.vn/images/logo_icon.png";
 
 	@GetMapping("/home")
 	public String home(Model model) {
 		return "home";
 	}
 
-//	@PostMapping("/createAccount")
-//	public String createNewAccount(@ModelAttribute("request") GuestRequest guestRequest, ModelAndView model,
-//			HttpServletRequest request) throws WriterException, IOException {
-//		String qrCodePath = writeQRcodeForGuest(guestRequest, request);
-//		model.addObject("code", qrCodePath);
-//		return "QRcode";
-//	}
 
-//	@GetMapping("/readQR")
-//	public String verifyQR(@RequestParam("qrImage") String qrImage, Model model) throws Exception {
-//		model.addAttribute("content", readQR(qrImage));
-//		model.addAttribute("code", qrImage);
-//		return "QRcode";
-//
-//	}
 
-//	private String writeQRcodeForGuest(GuestRequest guestRequest, HttpServletRequest request)
-//			throws WriterException, IOException {
-//		String applicationPath = request.getServletContext().getRealPath("");
-//		String upload_dir = "uploads";
-//		String uploadFilePath = applicationPath + File.separator + upload_dir + File.separator;
-//		String qcodePath = uploadFilePath + guestRequest.getName() + "-QRCode.png";
-//		QRCodeWriter qrCodeWriter = new QRCodeWriter();
-//		System.out.println(guestRequest.getName() + "\n" + guestRequest.getEmail() + "\n" + guestRequest.getMobile()
-//				+ "\n" + guestRequest.getPassword());
-//		BitMatrix bitMatrix = qrCodeWriter.encode(guestRequest.getName() + "\n" + guestRequest.getEmail() + "\n"
-//				+ guestRequest.getMobile() + "\n" + guestRequest.getPassword(), BarcodeFormat.QR_CODE, 350, 350);
-//		Path path = FileSystems.getDefault().getPath(qcodePath);
-//		MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-//		return "/images/" + guestRequest.getName() + "-QRCode.png";
-//	}
+
+
 
 //	private String readQR(String qrImage) throws Exception {
 //		final Resource fileResource = resourceLoader.getResource("classpath:static/" + qrImage);
@@ -137,47 +80,10 @@ public class QRcode {
 //		return Files.readAllBytes(Path.of(qcodePath));
 //
 //	}
-//	@PostMapping(value = "/test", produces = MediaType.IMAGE_PNG_VALUE)
-//	public ResponseEntity<byte[]> test(@RequestParam String content, HttpServletRequest request) throws IOException, WriterException {
-//
-////		QRCodeWriter qrCodeWriter = new QRCodeWriter();
-////		
-////		BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 350, 350);
-////		Path path = FileSystems.getDefault().getPath(qcodePath);
-////		MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-//		try {
-//			generateQRcodeWithLogo(content, request);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	    HttpHeaders headers = new HttpHeaders();
-//	    headers.setContentType(MediaType.IMAGE_PNG);
-//	    return new ResponseEntity<>(Files.readAllBytes(Path.of(qcodePath)), headers, HttpStatus.OK);
-//	}
-	
-	
-	@PostMapping(value = "/testQRCode", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public Map<String, String> generateQRCode(@RequestBody Map<String, String> requestData, HttpServletRequest request)
-			throws Exception {
 
-		String applicationPath = request.getServletContext().getRealPath("");
-		String upload_dir = "uploads";
-		String uploadFilePath = applicationPath + File.separator + upload_dir + File.separator;
-		String qcodePath = uploadFilePath + "test2" + "-QRCode.png";
-
-		String text = convertMapToJson(requestData);
-
-		generateQRcodeWithLogo(text, request, "t");
-		byte[] qrCodeImageBytes = Files.readAllBytes(Path.of(qcodePath));
-		String qrCodeImageBase64 = Base64.getEncoder().encodeToString(qrCodeImageBytes);
-
-		Map<String, String> response = new HashMap<>();
-		response.put("requestDataJson", text);
-		response.put("qrCodeImage", qrCodeImageBase64);
-
-		return response;
+	@PostMapping("/testQR")
+	public void testQR(HttpServletRequest request) throws Exception {
+		generateQRcodeWithLogo("tan", request, "test");
 	}
 
 	private String convertMapToJson(Map<String, String> requestData) throws JsonProcessingException {
@@ -199,7 +105,9 @@ public class QRcode {
 
 		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, imageConfig);
 		// Getting logo image
-		BufferedImage logoImage = resizeImage(ImageIO.read(new File("D:\\2_INTERN\\iconlogo.png")), 30, 30);
+		String pathLogo = applicationPath + "logos\\iconlogo.png";
+		System.out.println("path Logo: " + pathLogo);
+		BufferedImage logoImage = resizeImage(ImageIO.read(new File(pathLogo)), 30, 30);
 //		BufferedImage logoImage = resizeImage(ImageIO.read(new File("D:\\2_INTERN\\gpt.png")), 30, 30);
 
 //           BufferedImage logoImage = getOverlay(LOGO);
@@ -256,7 +164,7 @@ public class QRcode {
 			return false;
 		}
 //		String originalContent = parts[0];
-		System.out.println("parts :" + parts[0]+ " - " + parts[1]+ " - " +parts[2] +"length : " + parts.length);
+		System.out.println("parts :" + parts[0] + " - " + parts[1] + " - " + parts[2] + "length : " + parts.length);
 		String expirationTimeString = parts[parts.length - 1];
 
 		// Parse the expiration time string into LocalDateTime
