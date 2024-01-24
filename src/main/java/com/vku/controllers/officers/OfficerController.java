@@ -2,6 +2,7 @@ package com.vku.controllers.officers;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.vku.controllers.QRcode;
 import com.vku.dtos.AttendanceQRResponseDTO;
 import com.vku.dtos.ErrorResponse;
+import com.vku.dtos.StudentAttendanceForCourse;
 import com.vku.models.AttendanceSheet;
 import com.vku.models.Course;
 import com.vku.models.DetailAttendance;
@@ -33,6 +35,7 @@ import com.vku.services.CourseService;
 import com.vku.services.DetailAttendanceService;
 import com.vku.services.GuestService;
 import com.vku.services.OfficerService;
+import com.vku.services.StudentService;
 import com.vku.services.Student_CourseService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,12 +57,32 @@ public class OfficerController {
 	private GuestService guestService;
 	@Autowired
 	private CourseService courseService;
-
+	@Autowired
+	private StudentService studentService;
 	@GetMapping("/{id}")
 	public ResponseEntity<Officer> getOfficerById(@PathVariable("id") int officerId) {
 		return ResponseEntity.ok(officerService.getOfficerById(officerId));
 	}
 
+	@GetMapping("/getStudentAttendanceForCourseId/{id}")
+	public ResponseEntity<List<StudentAttendanceForCourse>> getStudentAttendanceForCourseId(@PathVariable("id") int courseId) {
+		List<Student_Course> listStudentCourses = student_CourseService.getStudentCourseWithCourseId((long) courseId);
+		List<StudentAttendanceForCourse> studentAttendanceForCourseList = new ArrayList<>();
+		
+		for (Student_Course student_Course : listStudentCourses) {
+			StudentAttendanceForCourse st = new StudentAttendanceForCourse();
+			Student student = studentService.getStudentByStudentCode(student_Course.getStudentCode());
+			st.setStudentCode(student_Course.getStudentCode());
+			st.setNameClass(student.getClassName());
+			st.setNameStudent(student.getName());
+			st.setPresent(student_Course.isExtraSheet());
+			st.setAbsenceCount(0);
+			studentAttendanceForCourseList.add(st);
+		}
+		System.out.println(" list attSt" +studentAttendanceForCourseList );
+		return ResponseEntity.ok(studentAttendanceForCourseList);
+	}
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateOfficer(@PathVariable("id") int officerId, @RequestBody Officer updatedOfficer) {
 //		Log log = new Log();
@@ -134,8 +157,9 @@ public class OfficerController {
 	}
 
 	@PostMapping("/attendanceQR")
-	public ResponseEntity<?> createSheetQRcode(@RequestParam("courseId") Long courseId,
+	public ResponseEntity<?> createSheetQRcode(@RequestParam ("courseId") int courseIdI,
 			@RequestParam("lessonContent") String lessonContent, HttpServletRequest request) throws Exception {
+		Long courseId = (long) courseIdI;
 		LocalDateTime attendanceDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		AttendanceSheet attendanceSheet = new AttendanceSheet();
@@ -158,6 +182,7 @@ public class OfficerController {
 			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception
+			System.out.println("AttendanceQR: " + e.getMessage());
 			return ResponseEntity.ok(false);
 
 		}

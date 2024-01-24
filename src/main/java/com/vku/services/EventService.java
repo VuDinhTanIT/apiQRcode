@@ -17,6 +17,9 @@ public class EventService {
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
+    public List<Event> getAllEventsByOrderByUpdateTimeDesc() {
+        return eventRepository.findAllByOrderByUpdateTime();
+    }
 
     public Event getEventById(Integer id) {
         return eventRepository.findById(id)

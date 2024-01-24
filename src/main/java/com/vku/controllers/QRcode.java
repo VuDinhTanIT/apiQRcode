@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -42,48 +43,9 @@ public class QRcode {
 		return "home";
 	}
 
-
-
-
-
-
-//	private String readQR(String qrImage) throws Exception {
-//		final Resource fileResource = resourceLoader.getResource("classpath:static/" + qrImage);
-//		File QRfile = fileResource.getFile();
-//		BufferedImage bufferedImg = ImageIO.read(QRfile);
-//		LuminanceSource source = new BufferedImageLuminanceSource(bufferedImg);
-//		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-//		Result result = new MultiFormatReader().decode(bitmap);
-//		System.out.println("Barcode Format: " + result.getBarcodeFormat());
-//		System.out.println("Content: " + result.getText());
-//		return result.getText();
-//
-//	}
-//	@PostMapping(value = "/test", produces = MediaType.IMAGE_PNG_VALUE)
-//	public byte[] test(@RequestParam String content, HttpServletRequest request) throws IOException, WriterException {
-//		System.out.println("request: " + request);
-//		String applicationPath = request.getServletContext().getRealPath("");
-//		String upload_dir = "uploads";
-//		String uploadFilePath = applicationPath + File.separator + upload_dir + File.separator;
-//		String qcodePath = uploadFilePath + "test12" + "-QRCode.png";
-////		QRCodeWriter qrCodeWriter = new QRCodeWriter();
-////		
-////		BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 350, 350);
-////		Path path = FileSystems.getDefault().getPath(qcodePath);
-////		MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-//		try {
-//			generateQRcodeWithLogo(content, qcodePath);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return Files.readAllBytes(Path.of(qcodePath));
-//
-//	}
-
-	@PostMapping("/testQR")
-	public void testQR(HttpServletRequest request) throws Exception {
-		generateQRcodeWithLogo("tan", request, "test");
+	@PostMapping("/createQR")
+	public String testQR(HttpServletRequest request , @RequestParam("content") String content ) throws Exception {
+		return generateQRcodeWithLogo(content, request, "event");
 	}
 
 	private String convertMapToJson(Map<String, String> requestData) throws JsonProcessingException {
@@ -97,7 +59,7 @@ public class QRcode {
 		String upload_dir = "uploads";
 		String uploadFilePath = applicationPath + upload_dir + File.separator;
 		String qcodePath = uploadFilePath + nameQRcode + "-QRCode.png";
-		System.out.println("acodePath: " + qcodePath);
+//		System.out.println("acodePath: " + qcodePath);
 		Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
 		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 		BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 400, 400, hints);
@@ -106,7 +68,7 @@ public class QRcode {
 		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, imageConfig);
 		// Getting logo image
 		String pathLogo = applicationPath + "logos\\iconlogo.png";
-		System.out.println("path Logo: " + pathLogo);
+//		System.out.println("path Logo: " + pathLogo);
 		BufferedImage logoImage = resizeImage(ImageIO.read(new File(pathLogo)), 30, 30);
 //		BufferedImage logoImage = resizeImage(ImageIO.read(new File("D:\\2_INTERN\\gpt.png")), 30, 30);
 

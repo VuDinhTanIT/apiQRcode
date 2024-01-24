@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.vku.dtos.StudentAttendanceForCourse;
 import com.vku.models.Student_Course;
 
 import jakarta.transaction.Transactional;
@@ -16,6 +17,13 @@ import jakarta.transaction.Transactional;
 @Repository
 @Transactional
 public interface Student_CourseRepository extends JpaRepository<Student_Course, Long> {
+//    @Query("SELECT new com.example.StudentAttendanceForCourse(sc.studentCode, s.className, s.name, sc.status, COUNT(CASE WHEN sc.status = false THEN 1 END)) " +
+//            "FROM Student_Course sc " +
+//            "JOIN sc.student s " +
+//            "WHERE sc.courseId = :id " +
+//            "GROUP BY sc.studentCode, s.className, s.name, sc.status")
+//    List<StudentAttendanceForCourse> getByCourseId(@Param("id") Long id);
+
 
 	List<Student_Course> findByCourseId(Long id);
 
@@ -36,7 +44,6 @@ public interface Student_CourseRepository extends JpaRepository<Student_Course, 
 
 	@Modifying
 	@Query("SELECT d FROM Student_Course d WHERE d.courseId = :courseId AND d.updateTime > :t")
-	List<Student_Course> findByCourseIdAndUpdateTimeThanT(@Param("courseId") Long courseId,
-			@Param("t") Timestamp t);
+	List<Student_Course> findByCourseIdAndUpdateTimeThanT(@Param("courseId") Long courseId, @Param("t") Timestamp t);
 
 }

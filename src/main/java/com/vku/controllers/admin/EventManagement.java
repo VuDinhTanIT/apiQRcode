@@ -4,9 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.vku.controllers.QRcode;
 import com.vku.dtos.ErrorResponse;
 import com.vku.models.Event;
 import com.vku.services.EventService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,10 +21,12 @@ public class EventManagement{
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private QRcode qRcode;
 
     @GetMapping
     public ResponseEntity<List<Event>> getAllEvents() {
-        List<Event> events = eventService.getAllEvents();
+        List<Event> events = eventService.getAllEventsByOrderByUpdateTimeDesc();
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
@@ -39,7 +45,9 @@ public class EventManagement{
     }
 
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+    public ResponseEntity<Event> createEvent(@RequestBody Event event, HttpServletRequest request) throws Exception {
+    	String eventQR = qRcode.generateQRcodeWithLogo(event.getQRCodeEvent(), request, "event");
+    	event.setQRCodeEvent(eventQR);
         Event createdEvent = eventService.createEvent(event);
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
