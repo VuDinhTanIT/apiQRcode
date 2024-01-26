@@ -3,6 +3,8 @@ package com.vku.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vku.dtos.StudentAttendanceForCourse;
+import com.vku.dtos.StudentCourseInfoDTO;
 import com.vku.models.Student_Course;
 import com.vku.repositories.Student_CourseRepository;
 
@@ -15,8 +17,8 @@ public class Student_CourseService {
 	@Autowired
 	private Student_CourseRepository student_CourseRepository;
 
-	public List<Student_Course> getAllStudent_Courses() {
-		return student_CourseRepository.findAll();
+	public List<StudentCourseInfoDTO> getAllStudent_Courses() {
+		return student_CourseRepository.getAllStudentCourseInfo();
 	}
 
 	public Student_Course getStudent_CourseById(Long id) {
@@ -61,5 +63,10 @@ public class Student_CourseService {
 		// TODO Auto-generated method stub
 		student_CourseRepository.updateExtraSheetByCourseIdAndStudentCode(courseId, studentCode, b);
 
+	}
+
+	public List<StudentAttendanceForCourse> getInfoStudentAttByCourseId(Long courseId) {
+		// TODO Auto-generated method stub
+		return student_CourseRepository.getInfoByCourseId(courseId);
 	}
 }

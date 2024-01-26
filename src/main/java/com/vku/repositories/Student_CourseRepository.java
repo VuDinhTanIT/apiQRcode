@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.vku.dtos.StudentAttendanceForCourse;
+import com.vku.dtos.StudentCourseInfoDTO;
 import com.vku.models.Student_Course;
 
 import jakarta.transaction.Transactional;
@@ -17,14 +18,20 @@ import jakarta.transaction.Transactional;
 @Repository
 @Transactional
 public interface Student_CourseRepository extends JpaRepository<Student_Course, Long> {
-//    @Query("SELECT new com.example.StudentAttendanceForCourse(sc.studentCode, s.className, s.name, sc.status, COUNT(CASE WHEN sc.status = false THEN 1 END)) " +
-//            "FROM Student_Course sc " +
-//            "JOIN sc.student s " +
-//            "WHERE sc.courseId = :id " +
-//            "GROUP BY sc.studentCode, s.className, s.name, sc.status")
-//    List<StudentAttendanceForCourse> getByCourseId(@Param("id") Long id);
+	@Query("SELECT new com.vku.dtos.StudentAttendanceForCourse(sc.studentCode, s.className, s.name, sc.status, COUNT(CASE WHEN sc.status = false THEN 1 END)) " +
+	        "FROM Student_Course sc " +
+	        "JOIN Student s ON sc.studentCode = s.studentCode " +
+	        "WHERE sc.courseId = :id " +
+	        "GROUP BY sc.studentCode, s.className, s.name, sc.status")
+	List<StudentAttendanceForCourse> getInfoByCourseId(@Param("id") Long id);
 
-
+	@Query("SELECT new com.vku.dtos.StudentCourseInfoDTO(sc.studentCode, s.className, s.name, c.name, sc.courseId) " +
+	        "FROM Student_Course sc " +
+	        "JOIN Student s ON sc.studentCode = s.studentCode " +
+	        "JOIN Course c ON c.id =  sc.courseId " +
+	        "WHERE s.status = true " +
+	        "GROUP BY sc.studentCode, s.className, s.name")
+	List<StudentCourseInfoDTO> getAllStudentCourseInfo();
 	List<Student_Course> findByCourseId(Long id);
 
 	List<Student_Course> findByExtraSheet(boolean bool);

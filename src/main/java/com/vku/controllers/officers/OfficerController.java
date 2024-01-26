@@ -68,17 +68,17 @@ public class OfficerController {
 	public ResponseEntity<List<StudentAttendanceForCourse>> getStudentAttendanceForCourseId(@PathVariable("id") int courseId) {
 		List<Student_Course> listStudentCourses = student_CourseService.getStudentCourseWithCourseId((long) courseId);
 		List<StudentAttendanceForCourse> studentAttendanceForCourseList = new ArrayList<>();
-		
-		for (Student_Course student_Course : listStudentCourses) {
-			StudentAttendanceForCourse st = new StudentAttendanceForCourse();
-			Student student = studentService.getStudentByStudentCode(student_Course.getStudentCode());
-			st.setStudentCode(student_Course.getStudentCode());
-			st.setNameClass(student.getClassName());
-			st.setNameStudent(student.getName());
-			st.setPresent(student_Course.isExtraSheet());
-			st.setAbsenceCount(0);
-			studentAttendanceForCourseList.add(st);
-		}
+		studentAttendanceForCourseList = student_CourseService.getInfoStudentAttByCourseId((long)courseId);
+//		for (Student_Course student_Course : listStudentCourses) {
+//			StudentAttendanceForCourse st = new StudentAttendanceForCourse();
+//			Student student = studentService.getStudentByStudentCode(student_Course.getStudentCode());
+//			st.setStudentCode(student_Course.getStudentCode());
+//			st.setNameClass(student.getClassName());
+//			st.setNameStudent(student.getName());
+//			st.setPresent(student_Course.isExtraSheet());
+//			st.setAbsenceCount(0);
+//			studentAttendanceForCourseList.add(st);
+//		}
 		System.out.println(" list attSt" +studentAttendanceForCourseList );
 		return ResponseEntity.ok(studentAttendanceForCourseList);
 	}

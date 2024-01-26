@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.vku.controllers.QRcode;
 import com.vku.dtos.AttendanceQRInfo;
 import com.vku.dtos.ErrorResponse;
+import com.vku.dtos.StudentCourseInfoDTO;
 import com.vku.models.Student;
 import com.vku.models.Student_Course;
 import com.vku.services.Student_CourseService;
@@ -29,11 +30,18 @@ public class Student_CourseManagement {
 //	private QRcode qrCode;
 
 	@GetMapping
-	public ResponseEntity<List<Student_Course>> getAllStudent_Courses() {
-		List<Student_Course> Student_Courses = student_CourseService.getAllStudent_Courses();
+	public ResponseEntity<List<StudentCourseInfoDTO>> getAllStudent_Courses() {
+		List<StudentCourseInfoDTO> Student_Courses = student_CourseService.getAllStudent_Courses();
 		return new ResponseEntity<>(Student_Courses, HttpStatus.OK);
 	}
-
+//	@GetMapping("/{id}")
+//	public ResponseEntity<Student_Course> getInfoStudent_CourseByCourseId(@PathVariable("id") Long id) {
+//		Student_Course Student_Course = student_CourseService.getInfoStudent_CourseByCourseId(id);
+//		if (Student_Course == null) {
+//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//		}
+//		return new ResponseEntity<>(Student_Course, HttpStatus.OK);
+//	}
 	@GetMapping("/{id}")
 	public ResponseEntity<Student_Course> getStudent_CourseById(@PathVariable("id") Long id) {
 		Student_Course Student_Course = student_CourseService.getStudent_CourseById(id);

@@ -42,4 +42,16 @@ public class StudentService {
 		// TODO Auto-generated method stub
 		return studentRepository.findByStudentCode(username);
 	}
+
+	public List<Student> searchByOptions(String idMajor, Integer idKhoa, Integer idCurriculum,
+			String keyWord) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Student> searchByOptions(String cccd, String studentCode, String name, Integer idMajor,
+			Integer idKhoa) {
+		// TODO Auto-generated method stub
+		return studentRepository.findByOptions(cccd, studentCode, name, idMajor, idKhoa);
+	}
 }

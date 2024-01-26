@@ -25,6 +25,17 @@ public class StudentManagement {
         List<Student> students = studentService.getAllStudents();
         return new ResponseEntity<>(students, HttpStatus.OK);
     }
+    @GetMapping("/search")
+	public ResponseEntity<List<Student>> search(@RequestParam(required = false) String cccd,@RequestParam(required = false) String studentCode, 
+			@RequestParam(required = false) String name,
+			@RequestParam(required = false) Integer idMajor,
+			@RequestParam(required = false) Integer idKhoa) {
+		
+//    	System.out.println("test search student: " +  cccd + " - " + name);
+		List<Student> listSearched = studentService.searchByOptions(cccd, studentCode, name, idMajor, idKhoa);
+
+		return ResponseEntity.ok(listSearched);
+	}
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") String id) {
