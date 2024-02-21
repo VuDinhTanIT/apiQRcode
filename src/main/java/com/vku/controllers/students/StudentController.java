@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.vku.controllers.QRcode;
+import com.vku.dtos.AttendanceRequest_StudentDTO;
 import com.vku.dtos.ErrorResponse;
 import com.vku.models.AttendanceSheet;
 import com.vku.models.DetailAttendance;
@@ -45,22 +46,28 @@ public class StudentController {
 	
 	
 	@PostMapping("/scanAttendanceQR")
-	public ResponseEntity<?> ScanAttendanceQRcode(@RequestParam("studentCode") String studentCode,@RequestParam("QRcodeInfo") String QRcodeInfo,
+	public ResponseEntity<?> ScanAttendanceQRcode(@RequestBody AttendanceRequest_StudentDTO attendanceRequest,
 			HttpServletRequest request) throws Exception {
 		
 		try {
+//			System.out.println("Request Att: " + attendanceRequest.toString());
+			String QRcodeInfo = attendanceRequest.getQrCodeInfo();
+			String studentCode = attendanceRequest.getStudentCode(); 
 			boolean isValid = qrCode.isQRCodeValid(QRcodeInfo);
 			if(!isValid) {
 				throw new Exception("Time out");
 			}
 			String courseId = QRcodeInfo.trim().split("\\|")[0];
-			student_CourseService.setExtraSheetWithCourseIdAndStudentCode(Long.parseLong(courseId),studentCode, true);
+			boolean check = student_CourseService.setExtraSheetWithCourseIdAndStudentCode(Long.parseLong(courseId),studentCode, true);
+			if(!check) {
+				throw new Exception("Dữ liệu điểm danh không hợp lệ!");
+			}
 			return new ResponseEntity<>(true, HttpStatus.OK);		
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 //			System.out.println(e.getMessage());
-			return ResponseEntity.ok(false);
+			return ResponseEntity.ok(e.getMessage() );
 			
 		} 
 	}
@@ -69,7 +76,7 @@ public class StudentController {
 	        try {
 	            Student student = studentService.getStudentByStudentCode(id);
 	            return ResponseEntity.ok(student);
-	        } catch (NoSuchElementException e) {
+	        } catch (NoSuchElementException e) {  
 	            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	        } catch (Exception e) {
