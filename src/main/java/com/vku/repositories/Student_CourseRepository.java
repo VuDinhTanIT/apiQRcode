@@ -24,8 +24,8 @@ public interface Student_CourseRepository extends JpaRepository<Student_Course, 
 	        "WHERE sc.courseId = :id " +
 	        "GROUP BY sc.studentCode, s.className, s.name, sc.status")
 	List<StudentAttendanceForCourse> getInfoByCourseId(@Param("id") Long id);
-
-	@Query("SELECT new com.vku.dtos.StudentCourseInfoDTO(sc.studentCode, s.className, s.name, c.name, sc.courseId) " +
+	
+	@Query("SELECT new com.vku.dtos.StudentCourseInfoDTO(sc.id, sc.studentCode, s.className, s.name, c.name, c.courseCode, sc.courseId, sc.status) " +
 	        "FROM Student_Course sc " +
 	        "JOIN Student s ON sc.studentCode = s.studentCode " +
 	        "JOIN Course c ON c.id =  sc.courseId " +
@@ -46,7 +46,7 @@ public interface Student_CourseRepository extends JpaRepository<Student_Course, 
 
 	@Modifying
 	@Query("UPDATE Student_Course sc SET sc.extraSheet = :bool WHERE sc.courseId = :courseId AND sc.studentCode = :studentCode")
-	void updateExtraSheetByCourseIdAndStudentCode(@Param("courseId") Long courseId,
+	int updateExtraSheetByCourseIdAndStudentCode(@Param("courseId") Long courseId,
 			@Param("studentCode") String studentCode, @Param("bool") boolean bool);
 
 	@Modifying

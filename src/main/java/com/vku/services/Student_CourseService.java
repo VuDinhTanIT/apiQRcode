@@ -59,10 +59,11 @@ public class Student_CourseService {
 		return student_CourseRepository.findByCourseIdAndUpdateTimeThanT(id, updateTime);
 	}
 
-	public void setExtraSheetWithCourseIdAndStudentCode(Long courseId, String studentCode, boolean b) {
+	public boolean setExtraSheetWithCourseIdAndStudentCode(Long courseId, String studentCode, boolean b) {
 		// TODO Auto-generated method stub
-		student_CourseRepository.updateExtraSheetByCourseIdAndStudentCode(courseId, studentCode, b);
-
+		int affectedRows = student_CourseRepository.updateExtraSheetByCourseIdAndStudentCode(courseId, studentCode, b);
+		// Nếu row đó có ảnh hưởng̣ câu lệnh thực thi đúng thì return true
+		return affectedRows > 0 ? true: false;
 	}
 
 	public List<StudentAttendanceForCourse> getInfoStudentAttByCourseId(Long courseId) {

@@ -119,7 +119,8 @@ public class QRcode {
 
 	public boolean isQRCodeValid(String qrCodeContent) {
 		// Split the QR code content into the original content and the expiration time
-		String[] parts = qrCodeContent.trim().split("\\|");
+		System.out.println("qr content: " + qrCodeContent);
+		String[] parts =qrCodeContent.contains("|") ? qrCodeContent.trim().split("\\|") : null;
 //		String[] parts = qrCodeContent.trim().split(Pattern.quote(" | "),-1);
 		if (parts.length < 2) {
 			// QR code does not contain the required information
