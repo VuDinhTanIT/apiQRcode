@@ -42,9 +42,8 @@ public class Officer {
 	private String degree;
 	private String salary;
 	private String allowance;
-	@Column(columnDefinition = "text")
 	private String QRCodeImage;
-	private boolean status;
+	private boolean status;	
 
 	@Column(name = "create_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false, nullable = false)
 	private Timestamp createTime;

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.vku.dtos.QRData;
 import com.vku.models.Guest;
 import com.vku.services.GuestService;
 
@@ -71,8 +72,9 @@ public class GuestController {
 
 		String content = String.valueOf(guest.getId());
 
-		String qrCodeImageBase64 = qRcode.generateQRcodeWithExpirationDays(content, request, guest.getCccd(), 1);
-		guest.setQRCodeImage(qrCodeImageBase64);
+//		String qrCodeImageBase64 = qRcode.generateQRcodeWithExpirationDays(content, request, guest.getCccd(), 1);
+		QRData qrData = qRcode.generateQRcodeWithLogoO(content, request, guest.getCccd());
+		guest.setQRCodeImage(qrData.getNameQRcode());
 //		guestService.updateGuest(guest);
 //        return new ResponseEntity<>(createdGuest, HttpStatus.CREATED);
 		return ResponseEntity.ok(guestService.updateGuest(guestService.updateGuest(guest)));
