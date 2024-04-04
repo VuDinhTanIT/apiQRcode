@@ -84,6 +84,6 @@ public class Student {
 	}
 
 	public void setPassword(String pass) {
-		PasswordEncryptor.encryptPassword(pass);
+		password = PasswordEncryptor.encryptPassword(pass);
 	}
 }

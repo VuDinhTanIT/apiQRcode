@@ -24,13 +24,14 @@ public class Guest {
 
 	private int id;
 	private String cccd;
+	private String name;
 	private String email;
 	private String phoneNumber;
 	private String organization;
 	private String purpose;
 	private String eventId;
 	private String otherEvent;
-	@Column(columnDefinition = "text")
+//	@Column(columnDefinition = "text")
 	private String QRCodeImage;
 	private boolean status;
 

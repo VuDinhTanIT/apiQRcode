@@ -15,7 +15,6 @@ public class StudentCourseInfoDTO {
 	private String courseName;
 	private String courseCode;
 	private Long courseId;
-	private boolean status;
-
+	private boolean present;
 
 }

@@ -32,7 +32,6 @@ public class Course {
 	private String schoolYear;
 	private int semester;
 	private boolean status;
-	private String qrCodeImageBase64;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "lecturer_id")
 	private Officer officer;

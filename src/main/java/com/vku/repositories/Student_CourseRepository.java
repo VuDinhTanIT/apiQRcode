@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 @Repository
 @Transactional
 public interface Student_CourseRepository extends JpaRepository<Student_Course, Long> {
-	@Query("SELECT new com.vku.dtos.StudentAttendanceForCourse(sc.studentCode, s.className, s.name, sc.status, COUNT(CASE WHEN sc.status = false THEN 1 END)) " +
+	@Query("SELECT new com.vku.dtos.StudentAttendanceForCourse(sc.studentCode, s.className, s.name, sc.extraSheet, COUNT(CASE WHEN sc.extraSheet = false THEN 1 END)) " +
 	        "FROM Student_Course sc " +
 	        "JOIN Student s ON sc.studentCode = s.studentCode " +
 	        "WHERE sc.courseId = :id " +

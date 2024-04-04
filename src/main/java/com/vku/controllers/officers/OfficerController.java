@@ -66,7 +66,7 @@ public class OfficerController {
 
 	@GetMapping("/getStudentAttendanceForCourseId/{id}")
 	public ResponseEntity<List<StudentAttendanceForCourse>> getStudentAttendanceForCourseId(@PathVariable("id") int courseId) {
-		List<Student_Course> listStudentCourses = student_CourseService.getStudentCourseWithCourseId((long) courseId);
+//		List<Student_Course> listStudentCourses = student_CourseService.getStudentCourseWithCourseId((long) courseId);
 		List<StudentAttendanceForCourse> studentAttendanceForCourseList = new ArrayList<>();
 		studentAttendanceForCourseList = student_CourseService.getInfoStudentAttByCourseId((long)courseId);
 //		for (Student_Course student_Course : listStudentCourses) {
@@ -160,6 +160,7 @@ public class OfficerController {
 	public ResponseEntity<?> createSheetQRcode(@RequestParam ("courseId") int courseIdI,
 			@RequestParam("lessonContent") String lessonContent, HttpServletRequest request) throws Exception {
 		Long courseId = (long) courseIdI;
+		System.out.println("Officer Controler: CourseId =  " + courseId);
 		LocalDateTime attendanceDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		AttendanceSheet attendanceSheet = new AttendanceSheet();
