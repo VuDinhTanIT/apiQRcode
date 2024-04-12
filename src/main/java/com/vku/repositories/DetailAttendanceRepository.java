@@ -15,11 +15,11 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface DetailAttendanceRepository extends JpaRepository<DetailAttendance, Long> {
-	DetailAttendance findFirstByAttendanceSheetIdOrderByUpdateTimeDesc(Long attendanceId);
+	DetailAttendance findFirstByCourseIdOrderByUpdateTimeDesc(Long courseId);
 	@Transactional
 	@Modifying
-    @Query("DELETE FROM DetailAttendance d WHERE d.attendanceSheetId = :attSheetId AND d.studentCode = :studentCode AND DATE(d.updateTime) = :date")
-    void deleteByAttendanceSheetIdAndStudentCodeAndDate(@Param("attSheetId") Long attendanceSheetId, @Param("studentCode") String studentCode, @Param("date") Timestamp date);
+    @Query("DELETE FROM DetailAttendance d WHERE d.courseId = :courseId AND d.studentCode = :studentCode AND DATE(d.updateTime) = :date")
+    int deleteByCourseIdAndStudentCodeAndDate(@Param("courseId") Long courseId, @Param("studentCode") String studentCode, @Param("date") Timestamp date);
 //	void deleteByAttendanceSheetIdAndStudentCode(Long attendanceSheetId, String studentCode);
 //    @Modifying
 //	@Query("SELECT d FROM DetailAttendance d WHERE d.attendanceSheetId = :attId AND d.updateTime < :t")

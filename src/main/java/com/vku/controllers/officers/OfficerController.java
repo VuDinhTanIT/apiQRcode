@@ -1,5 +1,6 @@
 package com.vku.controllers.officers;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -59,16 +60,18 @@ public class OfficerController {
 	private CourseService courseService;
 	@Autowired
 	private StudentService studentService;
+
 	@GetMapping("/{id}")
 	public ResponseEntity<Officer> getOfficerById(@PathVariable("id") int officerId) {
 		return ResponseEntity.ok(officerService.getOfficerById(officerId));
 	}
 
 	@GetMapping("/getStudentAttendanceForCourseId/{id}")
-	public ResponseEntity<List<StudentAttendanceForCourse>> getStudentAttendanceForCourseId(@PathVariable("id") int courseId) {
+	public ResponseEntity<List<StudentAttendanceForCourse>> getStudentAttendanceForCourseId(
+			@PathVariable("id") int courseId) {
 //		List<Student_Course> listStudentCourses = student_CourseService.getStudentCourseWithCourseId((long) courseId);
 		List<StudentAttendanceForCourse> studentAttendanceForCourseList = new ArrayList<>();
-		studentAttendanceForCourseList = student_CourseService.getInfoStudentAttByCourseId((long)courseId);
+		studentAttendanceForCourseList = student_CourseService.getInfoStudentAttByCourseId((long) courseId);
 //		for (Student_Course student_Course : listStudentCourses) {
 //			StudentAttendanceForCourse st = new StudentAttendanceForCourse();
 //			Student student = studentService.getStudentByStudentCode(student_Course.getStudentCode());
@@ -79,10 +82,10 @@ public class OfficerController {
 //			st.setAbsenceCount(0);
 //			studentAttendanceForCourseList.add(st);
 //		}
-		System.out.println(" list attSt" +studentAttendanceForCourseList );
+		System.out.println(" list attSt" + studentAttendanceForCourseList);
 		return ResponseEntity.ok(studentAttendanceForCourseList);
 	}
-	
+
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateOfficer(@PathVariable("id") int officerId, @RequestBody Officer updatedOfficer) {
 //		Log log = new Log();
@@ -157,7 +160,7 @@ public class OfficerController {
 	}
 
 	@PostMapping("/attendanceQR")
-	public ResponseEntity<?> createSheetQRcode(@RequestParam ("courseId") int courseIdI,
+	public ResponseEntity<?> createSheetQRcode(@RequestParam("courseId") int courseIdI,
 			@RequestParam("lessonContent") String lessonContent, HttpServletRequest request) throws Exception {
 		Long courseId = (long) courseIdI;
 		System.out.println("Officer Controler: CourseId =  " + courseId);
@@ -177,8 +180,8 @@ public class OfficerController {
 			String attendanceQRImageBase64 = qrCode.generateQRcodeWithExpirationDays(QRcodeInfo, request,
 					"attendanceQR", expirationHours);
 			AttendanceQRResponseDTO responseDTO = new AttendanceQRResponseDTO();
-	        responseDTO.setAttendanceId(attendanceSheetCreated.getId());
-	        responseDTO.setAttendanceQRImageBase64(attendanceQRImageBase64);
+			responseDTO.setAttendanceId(attendanceSheetCreated.getId());
+			responseDTO.setAttendanceQRImageBase64(attendanceQRImageBase64);
 //        Student_Course createdStudent_Course = student_CourseService.createStudent_Course(Student_Course);
 			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 		} catch (Exception e) {
@@ -216,19 +219,19 @@ public class OfficerController {
 	}
 
 	@PostMapping("/saveAttendance")
-	public ResponseEntity<?> saveAttendanceWithAttendanceId(@RequestParam("attendanceId") Long attendanceId) {
+	public ResponseEntity<?> saveAttendanceWithAttendanceId(@RequestParam("courseId") Long courseId) {
 		try {
-			AttendanceSheet attendanceSheet = attendanceSheetService.getAttendanceSheetById(attendanceId);
+//			AttendanceSheet attendanceSheet = attendanceSheetService.getAttendanceSheetById(attendanceId);
 //			Lẫy những studentCourse có ExtraSheet = false( những thằng vắng thì lấy)
 			List<Student_Course> listStudent_CoursesWithCoureId = student_CourseService
-					.getByExtraSheetAndCourseId(false, attendanceSheet.getCourseId());
+					.getByExtraSheetAndCourseId(false, courseId);
 			System.out.println("studentList: " + listStudent_CoursesWithCoureId);
 
 			for (Student_Course student_Course : listStudent_CoursesWithCoureId) {
 				if (!student_Course.isExtraSheet()) {
 					DetailAttendance detailAttendance = new DetailAttendance();
 					detailAttendance.setStudentCode(student_Course.getStudentCode());
-					detailAttendance.setAttendanceSheetId(attendanceId);
+					detailAttendance.setCourseId(courseId);
 					detailAttendanceService.createDetailAttendance(detailAttendance);
 //					student_CourseService.
 					System.out.println("studentController:  att - " + detailAttendance);
@@ -245,14 +248,13 @@ public class OfficerController {
 	}
 
 	@PostMapping("/updateAttendance")
-	public ResponseEntity<?> updateAttendanceWithAttendanceId(@RequestParam("attendanceId") Long attendanceId) {
+	public ResponseEntity<?> updateAttendanceWithAttendanceId(@RequestParam("courseId") Long courseId) {
 		try {
-			AttendanceSheet attendanceSheet = attendanceSheetService.getAttendanceSheetById(attendanceId);
 //			Lẫy những studentCourse với courseId và có updateTime lớn hơn thèn cập nhâp theo attendanceId mới nhất của bảng DetailAttendance
 //			Lấy những đứa mà quét mã QR sau khi đã lưu
 			List<Student_Course> listStudent_CoursesWithCoureId = student_CourseService
-					.getByCourseIdWithUpdateTimeThanT(attendanceSheet.getCourseId(), detailAttendanceService
-							.getFirstByAttendanceIdWithLatestUpdateTime(attendanceId).getUpdateTime());
+					.getByCourseIdWithUpdateTimeThanT(courseId,
+							detailAttendanceService.getFirstByCourseIdWithLatestUpdateTime(courseId).getUpdateTime());
 			System.out.println("studentList: " + listStudent_CoursesWithCoureId);
 
 			//
@@ -262,19 +264,52 @@ public class OfficerController {
 					DetailAttendance detailAttendance = new DetailAttendance();
 //					detailAttendance.setId(null);
 					detailAttendance.setStudentCode(student_Course.getStudentCode());
-					detailAttendance.setAttendanceSheetId(attendanceId);
+					detailAttendance.setCourseId(courseId);
 //					detailAttendanceService.createDetailAttendance(detailAttendance);
 //					student_CourseService.
 					System.out.println("studentController:  att - " + detailAttendance);
 				} else {
 					// Điểm danh lại: Nếu mà tìm có trong bảng detailAtt thì xóa đi
-					detailAttendanceService.deleteByAttendanceIdAndStudentCode(attendanceId,
+					detailAttendanceService.deleteByAttendanceIdAndStudentCodeAndDateOff(courseId,
 							student_Course.getStudentCode(), student_Course.getUpdateTime());
 					System.out.println("xóa: " + student_Course);
 
 				}
 			}
 //			setExtraSheetFalseWithCourseId(attendanceSheet.getCourseId());
+			return ResponseEntity.ok(true);
+		} catch (NoSuchElementException e) {
+			e.getMessage();
+			return ResponseEntity.ok(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.ok(false);
+		}
+	}
+
+	@PutMapping("/attendancePerStudent")
+	public ResponseEntity<?> attendancePerStudent(@RequestParam("courseId") Long courseId,
+			@RequestParam("studentCode") String studentCode) {
+		try {
+//			AttendanceSheet attendanceSheet = attendanceSheetService.getAttendanceSheetById(attendanceId);
+			// Lấy thời gian thực hiện bây giờ
+			Timestamp dayOff = Timestamp.valueOf(LocalDateTime.now()); //
+//			System.out.println("OfficerCon - DayOff: " + dayOff);
+
+			boolean bool = detailAttendanceService.deleteByAttendanceIdAndStudentCodeAndDateOff(courseId, studentCode,
+					dayOff);
+			if(!bool) {
+				DetailAttendance detailAttendance = new DetailAttendance();
+//				detailAttendance.setId(null);
+				detailAttendance.setStudentCode(studentCode);
+				detailAttendance.setCourseId(courseId);
+				detailAttendanceService.createDetailAttendance(detailAttendance);
+//				student_CourseService.
+//				System.out.println("studentController:  att - " + detailAttendance);
+
+			}
+			
+
 			return ResponseEntity.ok(true);
 		} catch (NoSuchElementException e) {
 			e.getMessage();

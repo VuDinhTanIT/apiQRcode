@@ -3,6 +3,7 @@ package com.vku.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vku.models.AttendanceSheet;
 import com.vku.models.DetailAttendance;
 import com.vku.repositories.DetailAttendanceRepository;
 
@@ -36,14 +37,27 @@ public class DetailAttendanceService {
 		detailAttendanceRepository.deleteById(id);
 	}
 
-	public DetailAttendance getFirstByAttendanceIdWithLatestUpdateTime(Long attendanceId) {
+	public DetailAttendance getFirstByAttendanceIdWithLatestUpdateTime(Long courseId) {
 		// TODO Auto-generated method stub
-		return detailAttendanceRepository.findFirstByAttendanceSheetIdOrderByUpdateTimeDesc(attendanceId);
+		return null;
 	}
 
-	public void deleteByAttendanceIdAndStudentCode(Long attendanceId, String studentCode, Timestamp date) {
+	public boolean deleteByAttendanceIdAndStudentCodeAndDateOff(Long courseId, String studentCode, Timestamp date) {
 		// TODO Auto-generated method stub
-		detailAttendanceRepository.deleteByAttendanceSheetIdAndStudentCodeAndDate(attendanceId, studentCode, date);
+		int affectedRows = detailAttendanceRepository.deleteByCourseIdAndStudentCodeAndDate(courseId, studentCode, date);
+		// Nếu row đó có ảnh hưởng̣ câu lệnh thực thi đúng thì return true
+		return affectedRows > 0 ? true: false;
 
 	}
+
+	public DetailAttendance getFirstByCourseIdWithLatestUpdateTime(Long courseId) {
+		// TODO Auto-generated method stub
+		return detailAttendanceRepository.findFirstByCourseIdOrderByUpdateTimeDesc(courseId);
+	}
+
+//	public boolean getByCourseIdAndStudentCode(Long courseId, String studentCode, Timestamp dayOff) {
+//		// TODO Auto-generated method stub
+//		detailAttendanceRepository.deleteByCourseIdAndStudentCodeAndDate(courseId, studentCode, dayOff);
+//	}
+
 }
