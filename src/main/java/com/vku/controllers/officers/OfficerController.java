@@ -146,6 +146,7 @@ public class OfficerController {
 	@GetMapping(value = { "/getCoursesByOfficerId/{officerId}", "course/{officerId}" })
 	public ResponseEntity<List<Course>> getCourseById(@PathVariable("officerId") int officerId) {
 		List<Course> listCourses = courseService.getCoursesByOfficerId(officerId);
+		System.out.println("Officer C - listCourses: " + listCourses);
 		if (listCourses == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -286,7 +287,9 @@ public class OfficerController {
 			return ResponseEntity.ok(false);
 		}
 	}
-
+//Gọi hàm xóa SV với courseId và ngày dạy bảng điểm danh chi tiết, nếu check đúng( có sv trong bảng-> SV vắng)
+//	thì SV đó được xóa khỏi bảng và cập nhập lại trạng thái có mặt cho SV.
+//	nếu check false, thì thực hiện thêm SV vào bảng và cập nhập lại trạng thái thành vắng cho SV.
 	@PutMapping("/attendancePerStudent")
 	public ResponseEntity<?> attendancePerStudent(@RequestParam("courseId") Long courseId,
 			@RequestParam("studentCode") String studentCode) {
@@ -295,18 +298,24 @@ public class OfficerController {
 			// Lấy thời gian thực hiện bây giờ
 			Timestamp dayOff = Timestamp.valueOf(LocalDateTime.now()); //
 //			System.out.println("OfficerCon - DayOff: " + dayOff);
-
+//			Xóa SV trong bảng Điểm danh chi tiết, trả về true nếu có SV đc xóa, false nếu ko có SV nào bị xóa
 			boolean bool = detailAttendanceService.deleteByAttendanceIdAndStudentCodeAndDateOff(courseId, studentCode,
 					dayOff);
 			if(!bool) {
+//				THực hiện thêm SV vào bảng điểm danh chi tiết và cập nhập
 				DetailAttendance detailAttendance = new DetailAttendance();
 //				detailAttendance.setId(null);
 				detailAttendance.setStudentCode(studentCode);
 				detailAttendance.setCourseId(courseId);
 				detailAttendanceService.createDetailAttendance(detailAttendance);
+//				CẬp nhập thành trạng thái vắng cho SV
+				student_CourseService.setExtraSheetWithCourseIdAndStudentCode(courseId, studentCode, false);
+				
 //				student_CourseService.
 //				System.out.println("studentController:  att - " + detailAttendance);
-
+			}else {
+//				CẬp nhập trạng thái có mặt cho SV
+				student_CourseService.setExtraSheetWithCourseIdAndStudentCode(courseId, studentCode, true);
 			}
 			
 
