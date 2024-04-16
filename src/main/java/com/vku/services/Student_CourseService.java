@@ -68,7 +68,7 @@ public class Student_CourseService {
 
 	public List<StudentAttendanceForCourse> getInfoStudentAttByCourseId(Long courseId) {
 		// TODO Auto-generated method stub
-		System.out.println("StCourseService - list: " + student_CourseRepository.getInfoByCourseId(courseId));
+//		System.out.println("StCourseService - list: " + student_CourseRepository.getInfoByCourseId(courseId));
 		return student_CourseRepository.getInfoByCourseId(courseId);
 	}
 }

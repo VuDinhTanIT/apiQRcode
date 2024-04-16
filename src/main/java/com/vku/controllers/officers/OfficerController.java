@@ -172,6 +172,7 @@ public class OfficerController {
 		attendanceSheet.setCourseId(courseId);
 		attendanceSheet.setLessonContent(lessonContent);
 		attendanceSheet.setTeachDate(attendanceDate.format(formatter));
+		attendanceSheet.setStatus(true);
 		try {
 //			setExtraSheetFalseWithCourseId(courseId);
 			student_CourseService.setExtraSheetWithCourseId(courseId, false);
@@ -197,28 +198,41 @@ public class OfficerController {
 	@PostMapping("/attendanceNormal")
 	public ResponseEntity<?> createNormalAttendance(@RequestParam("courseId") Long courseId,
 			@RequestParam("lessonContent") String lessonContent, HttpServletRequest request) throws Exception {
-		LocalDateTime attendanceDate = LocalDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		AttendanceSheet attendanceSheet = new AttendanceSheet();
-		attendanceSheet.setId(null);
-		attendanceSheet.setCourseId(courseId);
-		attendanceSheet.setLessonContent(lessonContent);
-		attendanceSheet.setTeachDate(attendanceDate.format(formatter));
+
 		try {
-//			setExtraSheetFalseWithCourseId(courseId);
-			student_CourseService.setExtraSheetWithCourseId(courseId, true);
-			AttendanceSheet attendanceSheetCreated = attendanceSheetService.createAttendanceSheet(attendanceSheet);
-//        Student_Course createdStudent_Course = student_CourseService.createStudent_Course(Student_Course);
+			LocalDateTime attendanceDate = LocalDateTime.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			Boolean checkAttendanced = attendanceSheetService.checkAttendancedToday(Timestamp.valueOf(attendanceDate),
+					courseId);
+			System.out.println("checkAttendance: " + checkAttendanced);
+			if (checkAttendanced) {
+				new Exception("Đã tạo điểm danh rồi");
+			} else {
 
-			return new ResponseEntity<>(attendanceSheetCreated.getId(), HttpStatus.OK);
+				AttendanceSheet attendanceSheet = new AttendanceSheet();
+				attendanceSheet.setId(null);
+				attendanceSheet.setCourseId(courseId);
+				attendanceSheet.setLessonContent(lessonContent);
+				attendanceSheet.setTeachDate(attendanceDate.format(formatter));
+				attendanceSheet.setStatus(true);
 
+				setExtraSheetFalseWithCourseId(courseId);
+				student_CourseService.setExtraSheetWithCourseId(courseId, true);
+				AttendanceSheet attendanceSheetCreated = attendanceSheetService.createAttendanceSheet(attendanceSheet);
+//			Student_Course createdStudent_Course = student_CourseService.createStudent_Course(Student_Course);
+
+				return new ResponseEntity<>(attendanceSheetCreated.getId(), HttpStatus.OK);
+//			return ResponseEntity.ok(true);
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			return ResponseEntity.ok(false);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 
 		}
+		return null;
 	}
 
+//Note: Khi điểm danh thủ công từng SV đã vào rồi, khi lưu điểm danh sẽ chèn vào nữa => Lưu trước khi điểm danh thủ công
 	@PostMapping("/saveAttendance")
 	public ResponseEntity<?> saveAttendanceWithAttendanceId(@RequestParam("courseId") Long courseId) {
 		try {
@@ -248,6 +262,7 @@ public class OfficerController {
 		}
 	}
 
+//  Cần xxem xét lại vì save đã bao quét rồi, không cần nhiều ... 
 	@PostMapping("/updateAttendance")
 	public ResponseEntity<?> updateAttendanceWithAttendanceId(@RequestParam("courseId") Long courseId) {
 		try {
@@ -287,6 +302,7 @@ public class OfficerController {
 			return ResponseEntity.ok(false);
 		}
 	}
+
 //Gọi hàm xóa SV với courseId và ngày dạy bảng điểm danh chi tiết, nếu check đúng( có sv trong bảng-> SV vắng)
 //	thì SV đó được xóa khỏi bảng và cập nhập lại trạng thái có mặt cho SV.
 //	nếu check false, thì thực hiện thêm SV vào bảng và cập nhập lại trạng thái thành vắng cho SV.
@@ -301,7 +317,7 @@ public class OfficerController {
 //			Xóa SV trong bảng Điểm danh chi tiết, trả về true nếu có SV đc xóa, false nếu ko có SV nào bị xóa
 			boolean bool = detailAttendanceService.deleteByAttendanceIdAndStudentCodeAndDateOff(courseId, studentCode,
 					dayOff);
-			if(!bool) {
+			if (!bool) {
 //				THực hiện thêm SV vào bảng điểm danh chi tiết và cập nhập
 				DetailAttendance detailAttendance = new DetailAttendance();
 //				detailAttendance.setId(null);
@@ -310,14 +326,13 @@ public class OfficerController {
 				detailAttendanceService.createDetailAttendance(detailAttendance);
 //				CẬp nhập thành trạng thái vắng cho SV
 				student_CourseService.setExtraSheetWithCourseIdAndStudentCode(courseId, studentCode, false);
-				
+
 //				student_CourseService.
 //				System.out.println("studentController:  att - " + detailAttendance);
-			}else {
+			} else {
 //				CẬp nhập trạng thái có mặt cho SV
 				student_CourseService.setExtraSheetWithCourseIdAndStudentCode(courseId, studentCode, true);
 			}
-			
 
 			return ResponseEntity.ok(true);
 		} catch (NoSuchElementException e) {

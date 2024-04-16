@@ -1,5 +1,6 @@
 package com.vku.services;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -40,5 +41,15 @@ public class AttendanceSheetService {
 
 	public void deleteAttendanceSheet(Long id) {
 		attendanceSheetRepository.deleteById(id);
+	}
+
+	public Boolean checkAttendancedToday(Timestamp date, Long courseId ) {
+		
+		
+		int affectedRows = attendanceSheetRepository.countByCourseIdAndTeachDate(courseId, date);
+		System.out.println("date: " + date + "row: " + affectedRows);
+		System.out.println("cout listAtt: " + attendanceSheetRepository.findByCourseIdAndTeachDate(courseId, date.toString()));
+		// Nếu row đó có ảnh hưởng̣ câu lệnh thực thi đúng thì return true
+		return affectedRows > 0 ? true: false;
 	}
 }

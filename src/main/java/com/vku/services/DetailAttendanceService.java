@@ -52,6 +52,7 @@ public class DetailAttendanceService {
 
 	public DetailAttendance getFirstByCourseIdWithLatestUpdateTime(Long courseId) {
 		// TODO Auto-generated method stub
+//		System.out.println("DetailService: getFT: " + detailAttendanceRepository.findFirstByCourseIdOrderByUpdateTimeDesc(courseId));
 		return detailAttendanceRepository.findFirstByCourseIdOrderByUpdateTimeDesc(courseId);
 	}
 
