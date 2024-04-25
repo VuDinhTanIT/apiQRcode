@@ -33,3 +33,5 @@ build/
 .vscode/
 .metadata/
 /src/main/webapp/uploads
+/src/main/webapp/uploads
+*.png

@@ -2,9 +2,11 @@ package com.vku.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.vku.dtos.AttendanceRequest_StudentDTO;
 import com.vku.dtos.QRData;
 import com.vku.models.Guest;
 import com.vku.services.GuestService;
@@ -41,21 +43,6 @@ public class GuestController {
 		return new ResponseEntity<>(guest, HttpStatus.OK);
 	}
 
-	@GetMapping("/test")
-	public String test(HttpServletRequest request) {
-//        Guest guest = guestService.getGuestById(id);
-//        if (guest == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(guest, HttpStatus.OK);
-		System.out.println("-----------");
-		System.out.println(request.getContextPath());
-		System.out.println(request.getRequestURI());
-		System.out.println(request.getServletPath().toString());
-		System.out.println(request.getServletContext().toString());
-
-		return null;
-	}
 
 //    @PostMapping
 //    public ResponseEntity<Guest> createGuest(@RequestBody Guest guest) {
@@ -78,6 +65,33 @@ public class GuestController {
 //		guestService.updateGuest(guest);
 //        return new ResponseEntity<>(createdGuest, HttpStatus.CREATED);
 		return ResponseEntity.ok(guestService.updateGuest(guestService.updateGuest(guest)));
+	}
+	@PostMapping("/scanQR")
+	public ResponseEntity<?> ScanAttendanceQRcode(@RequestParam String guestQR,
+			HttpServletRequest request) throws Exception {
+		try {
+			Guest guest = guestService.getGuestById(Integer.parseInt(guestQR));
+			if (guest == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+			
+//			System.out.println("Request Att: " + attendanceRequest.toString());
+//			String QRcodeInfo = attendanceRequest.getQrCodeInfo();
+//			String studentCode = attendanceRequest.getStudentCode(); 
+//			boolean isValid = qRcode.isQRCodeValid(guestQR);
+//			if(!isValid) {
+//				throw new Exception("Time out");
+//			}
+//			String courseId = QRcodeInfo.trim().split("\\|")[0];
+			
+			return new ResponseEntity<>(guest, HttpStatus.OK);		
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+//			System.out.println(e.getMessage());
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			
+		} 
 	}
 	@PostMapping
 	public ResponseEntity<Guest> createGuest(@RequestBody Guest guest, HttpServletRequest request) throws Exception {

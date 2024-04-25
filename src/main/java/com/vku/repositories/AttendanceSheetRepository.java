@@ -17,5 +17,7 @@ public interface AttendanceSheetRepository extends JpaRepository<AttendanceSheet
 	int countByCourseIdAndTeachDate(@Param("courseId") Long courseId, @Param("date") Timestamp date);    
 	
 	List<AttendanceSheet> findByCourseIdAndTeachDate(Long courseId, String date);
+
+	List<AttendanceSheet> findByCourseId(Long courseId);
 			
 }

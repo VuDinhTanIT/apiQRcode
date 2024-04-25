@@ -41,7 +41,7 @@ public class StudentController {
 	@Autowired
 	private StudentService studentService;
 	@Autowired
-	private DetailAttendanceService detailAttendanceService; 
+	private AttendanceSheetService attendanceSheetService; 
 
 	
 	
@@ -83,8 +83,20 @@ public class StudentController {
 	            ErrorResponse errorResponse = new ErrorResponse("An error occurred", 500);
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 	        }
+	    } 
+	 @GetMapping("/teachingSchedule/{courseId}")
+	    public ResponseEntity<?> getTeachingSchedule(@PathVariable Long courseId) {
+	        try {
+	        	List<AttendanceSheet> attendanceSheets = attendanceSheetService.getTeachingSchedule(courseId);
+	        	return ResponseEntity.ok(attendanceSheets);
+	        } catch (NoSuchElementException e) {  
+	            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	        } catch (Exception e) {
+	            ErrorResponse errorResponse = new ErrorResponse("An error occurred", 500);
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+	        }
 	    }
-
 	    @PutMapping("/{id}")
 	    public ResponseEntity<?> updateStudent(@PathVariable("id") String id, @RequestBody Student student) {
 	        try {

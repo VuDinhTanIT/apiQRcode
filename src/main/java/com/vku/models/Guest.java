@@ -35,7 +35,7 @@ public class Guest {
 	private String QRCodeImage;
 	private boolean status;
 
-	private String arrivlDate;
+	private String arrivalDate;
 	@Column(name = "create_time", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false, nullable = false)
 	private Timestamp createTime;
 	

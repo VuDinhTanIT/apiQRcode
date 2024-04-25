@@ -52,4 +52,9 @@ public class AttendanceSheetService {
 		// Nếu row đó có ảnh hưởng̣ câu lệnh thực thi đúng thì return true
 		return affectedRows > 0 ? true: false;
 	}
+
+	public  List<AttendanceSheet> getTeachingSchedule( Long courseId) {
+		// TODO Auto-generated method stub
+		return attendanceSheetRepository.findByCourseId(courseId);
+	}
 }

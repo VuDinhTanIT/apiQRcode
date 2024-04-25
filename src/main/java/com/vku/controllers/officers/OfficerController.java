@@ -166,14 +166,23 @@ public class OfficerController {
 		Long courseId = (long) courseIdI;
 		System.out.println("Officer Controler: CourseId =  " + courseId);
 		LocalDateTime attendanceDate = LocalDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		AttendanceSheet attendanceSheet = new AttendanceSheet();
-		attendanceSheet.setId(null);
-		attendanceSheet.setCourseId(courseId);
-		attendanceSheet.setLessonContent(lessonContent);
-		attendanceSheet.setTeachDate(attendanceDate.format(formatter));
-		attendanceSheet.setStatus(true);
+		Boolean checkAttendanced = attendanceSheetService.checkAttendancedToday(Timestamp.valueOf(attendanceDate),
+				courseId);
+		System.out.println("checkAttendance: " + checkAttendanced);
+		if (checkAttendanced) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã tạo điểm danh rồi");
+
+		} 
 		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			AttendanceSheet attendanceSheet = new AttendanceSheet();
+			attendanceSheet.setId(null);
+			attendanceSheet.setCourseId(courseId);
+			attendanceSheet.setLessonContent(lessonContent);
+			attendanceSheet.setTeachDate(attendanceDate.format(formatter));
+			attendanceSheet.setStatus(true);
 //			setExtraSheetFalseWithCourseId(courseId);
 			student_CourseService.setExtraSheetWithCourseId(courseId, false);
 			AttendanceSheet attendanceSheetCreated = attendanceSheetService.createAttendanceSheet(attendanceSheet);
