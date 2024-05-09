@@ -54,14 +54,14 @@ public class LoginController {
 //	}
 	@PostMapping("/guests/login")
 	public ResponseEntity<Object> loginGuest(@RequestBody LoginRequest loginRequest) {
-		String cccd = loginRequest.getUsername();
+		String userName = loginRequest.getUsername();
 		String phoneNumber = loginRequest.getPassword();
 
-		Guest user = guestService.loginByPhoneNumberAndCccd(phoneNumber, cccd);
+		Guest user = guestService.loginByPhoneNumberAndUserName(phoneNumber, userName);
 		Log log = new Log();
 		if (user != null) {
-			log.setActor(user.getCccd());
-			log.setLog("Khách đăng nhập thành công: " + cccd + " - ");
+			log.setActor(user.getName());
+			log.setLog("Khách đăng nhập thành công: " + userName + " - " + phoneNumber);
 			logService.wirteLog(log);
 			return ResponseEntity.ok().body(user);
 		} else {

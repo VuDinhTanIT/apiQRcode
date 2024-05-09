@@ -31,12 +31,17 @@ public class GuestService {
 		return guestRepository.save(guest);
 	}
 
-	public Guest loginByPhoneNumberAndCccd(String phoneNumber, String cccd) {
-		// TODO Auto-generated method stub
-		return guestRepository.findByPhoneNumberAndCccd(phoneNumber, cccd);
-	}
+//	public Guest loginByPhoneNumber(String phoneNumber) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	public void deleteGuest(int id) {
 		guestRepository.deleteById(id);
+	}
+
+	public Guest loginByPhoneNumberAndUserName(String phoneNumber, String userName) {
+		// TODO Auto-generated method stub
+		return guestRepository.findByPhoneNumberAndName(phoneNumber, userName);
 	}
 }

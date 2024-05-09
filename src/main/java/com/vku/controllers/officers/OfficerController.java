@@ -241,7 +241,7 @@ public class OfficerController {
 		return null;
 	}
 
-//Note: Khi điểm danh thủ công từng SV đã vào rồi, khi lưu điểm danh sẽ chèn vào nữa => Lưu trước khi điểm danh thủ công
+//Note: Khi điểm danh thủ công từng SV đã vào ds vang rồi, khi lưu điểm danh sẽ chèn vào nữa => Lưu trước khi điểm danh thủ công
 	@PostMapping("/saveAttendance")
 	public ResponseEntity<?> saveAttendanceWithAttendanceId(@RequestParam("courseId") Long courseId) {
 		try {
@@ -271,7 +271,7 @@ public class OfficerController {
 		}
 	}
 
-//  Cần xxem xét lại vì save đã bao quét rồi, không cần nhiều ... 
+//  Cần xxem xét lại vì save đã bao quat rồi, không cần nhiều ... 
 	@PostMapping("/updateAttendance")
 	public ResponseEntity<?> updateAttendanceWithAttendanceId(@RequestParam("courseId") Long courseId) {
 		try {

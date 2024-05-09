@@ -29,6 +29,7 @@ import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 @Service
 public class QrCodeService {
@@ -93,41 +94,44 @@ public class QrCodeService {
 		}
 		return encodedContent;
 	}
-
+	
 	public String generateQRcodeWithLogo(String content, String qrcodePath, String applicationPath) throws Exception {
-		// TODO Auto-generated method stub
+	    Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
+	    hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+	    BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 400, 400, hints);
+	    MatrixToImageConfig imageConfig = new MatrixToImageConfig(MatrixToImageConfig.BLACK, MatrixToImageConfig.WHITE);
 
-		Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
-		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-		BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 400, 400, hints);
-		MatrixToImageConfig imageConfig = new MatrixToImageConfig(MatrixToImageConfig.BLACK, MatrixToImageConfig.WHITE);
+	    BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, imageConfig);
+	    BufferedImage qrImageCopy = new BufferedImage(qrImage.getWidth(), qrImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+	    qrImageCopy.getGraphics().drawImage(qrImage, 0, 0, null);
 
-		BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, imageConfig);
-		// Getting logo image
-		String pathLogo = applicationPath + "logos\\iconlogo.png";
-//		System.out.println("path Logo: " + pathLogo);
-		BufferedImage logoImage = resizeImage(ImageIO.read(new File(pathLogo)), 30, 30);
+	    String pathLogo = applicationPath + "logos\\iconlogo.png";
+	    BufferedImage logoImage = ImageIO.read(new File(pathLogo));
 
-		int finalImageHeight = qrImage.getHeight() - logoImage.getHeight();
-		int finalImageWidth = qrImage.getWidth() - logoImage.getWidth();
-		Graphics2D graphics = qrImage.createGraphics();
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    int logoSize = Math.min(qrImageCopy.getWidth() / 6, qrImageCopy.getHeight() / 6);
+	    int logoX = (qrImageCopy.getWidth() - logoSize) / 2;
+	    int logoY = (qrImageCopy.getHeight() - logoSize) / 2;
 
-		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-		graphics.drawImage(logoImage, (int) Math.round(finalImageWidth / 2), (int) Math.round(finalImageHeight / 2),
-				null);
+	    BufferedImage resizedLogoImage = resizeImage(logoImage, logoSize, logoSize);
 
-		ImageIO.write(qrImage, "png", new File(qrcodePath));
-		return null;
+	    Graphics2D graphics = qrImageCopy.createGraphics();
+	    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+	    
+	    graphics.drawImage(resizedLogoImage, logoX, logoY, null);
+//	    graphics.setColor(Color.DARK_GRAY);
+
+	    ImageIO.write(qrImageCopy, "png", new File(qrcodePath));
+	    return null;
 	}
 
 	private static BufferedImage resizeImage(BufferedImage image, int width, int height) {
-		BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D graphics = resizedImage.createGraphics();
-		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		graphics.drawImage(image, 0, 0, width, height, null);
-		graphics.dispose();
-		return resizedImage;
+	    BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D graphics = resizedImage.createGraphics();
+	    graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    graphics.drawImage(image, 0, 0, width, height, null);
+	    graphics.dispose();
+	    return resizedImage;
 	}
 
 }

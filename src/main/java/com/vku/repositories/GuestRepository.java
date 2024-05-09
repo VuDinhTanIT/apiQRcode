@@ -8,6 +8,8 @@ import com.vku.models.Guest;
 @Repository
 public interface GuestRepository extends JpaRepository<Guest, Integer> {
 
-	Guest findByPhoneNumberAndCccd(String phoneNumber, String cccd);
+//	Guest findByPhoneNumber(String phoneNumber);
     // Các phương thức tùy chỉnh khác có thể được khai báo ở đây nếu cần
+
+	Guest findByPhoneNumberAndName(String phoneNumber, String userName);
 }

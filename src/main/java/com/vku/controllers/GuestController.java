@@ -13,12 +13,7 @@ import com.vku.services.GuestService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("api/guests")

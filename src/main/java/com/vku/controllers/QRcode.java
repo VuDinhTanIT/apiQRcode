@@ -38,9 +38,9 @@ public class QRcode {
 	}
 
 	@PostMapping("/createQR")
-	public String testQR(HttpServletRequest request, @RequestParam("content") String content) throws Exception {
+	public void testQR(HttpServletRequest request, @RequestParam("content") String content) throws Exception {
 		generateQRcodeWithLogo(content, request, "event");
-		return null;
+//		return null;
 	}
 	
 
@@ -76,7 +76,7 @@ public class QRcode {
 		String qrcodePath = uploadFilePath + nameQRcode;
 		System.out.println("path image: " + qrcodePath);
 
-		String txt = qrCodeService.generateQRcodeWithLogo(content, qrcodePath, applicationPath);
+		qrCodeService.generateQRcodeWithLogo(content, qrcodePath, applicationPath);
 
 		byte[] qrCodeImageBytes = Files.readAllBytes(Path.of(qrcodePath));
 		String qrCodeImageBase64 = Base64.getEncoder().encodeToString(qrCodeImageBytes);
