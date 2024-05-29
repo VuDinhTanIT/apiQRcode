@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.vku.controllers.QRcode;
 import com.vku.dtos.ErrorResponse;
+import com.vku.dtos.QRData;
 import com.vku.models.Event;
 import com.vku.services.EventService;
 
@@ -46,24 +47,38 @@ public class EventManagement{
 
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody Event event, HttpServletRequest request) throws Exception {
-    	String eventQR = qRcode.generateQRcodeWithLogo(event.getQRCodeEvent(), request, "event");
-    	event.setQRCodeEvent(eventQR);
+    	String eventPath = "event_"+event.getId();
+    	QRData qrData = qRcode.generateQRcodeWithLogoO(event.getUrlEvent(), request, eventPath);
+    	event.setQRCodeEvent(qrData.getNameQRcode());
         Event createdEvent = eventService.createEvent(event);
         return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable("id") Integer id, @RequestBody Event event) {
+    public ResponseEntity<?> updateEvent(@PathVariable("id") Integer id, @RequestBody Event event, HttpServletRequest request) {
         try {
-            Event existingEvent = eventService.getEventById(id);
-            event.setId(id);
+        	System.out.println("updateEvent: " + event);
+        	Event existingEvent = eventService.getEventById(id);
+//        	if(existingEvent.getUrlEvent() != null && event.getUrlEvent() != null && existingEvent.getUrlEvent() == (event.getUrlEvent())) {
+        	String urlExEvent = existingEvent.getUrlEvent();
+        	String urlNewEvent = event.getUrlEvent();
+        	if( urlExEvent.charAt(urlExEvent.length() - 2) != (urlNewEvent.charAt(urlNewEvent.length() - 2))) {
+        		System.out.println("Cạp nhập Event: != urlEvent ");
+        		String eventPath = "event_"+event.getId();
+        		QRData qrData = qRcode.generateQRcodeWithLogoO(event.getUrlEvent(), request, eventPath);
+        		event.setQRCodeEvent(qrData.getNameQRcode());
+        	}
+        	event.setId(id);
+        	System.out.println("existingEvent: " + existingEvent);
             Event updatedEvent = eventService.updateEvent(event);
             return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("An error occurred", 500);
+        	
+//        	e.printStackTrace();	
+            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 500);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }

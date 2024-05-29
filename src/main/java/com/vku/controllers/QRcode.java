@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 import com.vku.dtos.QRData;
+import com.vku.enums.QR_Parameters;
+import com.vku.dtos.DataRespone;
 import com.vku.services.QrCodeService;
 
 import ch.qos.logback.core.model.Model;
@@ -48,6 +51,17 @@ public class QRcode {
 //		ObjectMapper objectMapper = new ObjectMapper();
 //		return objectMapper.writeValueAsString(requestData);
 //	}
+	 @PostMapping("/processQRCode")
+	    public DataRespone<QR_Parameters, Object> processQRCode(@RequestBody String scannedData) {
+	        // Xử lý dữ liệu đã quét từ mã QR (scannedData) và thu được kết quả
+
+//	        UserRole userRole = UserRole.STUDENT;
+		 
+	        Object data = "Dữ liệu tương ứng với STUDENT";
+	        QR_Parameters param = QR_Parameters.STUDENT;
+	        DataRespone<QR_Parameters, Object> response = new DataRespone(param, data);
+	        return response;
+	    }
 	@PostMapping("/api/readQR")
 	public ResponseEntity<?> readQRCode(@RequestParam("file") MultipartFile file) {
 		try {

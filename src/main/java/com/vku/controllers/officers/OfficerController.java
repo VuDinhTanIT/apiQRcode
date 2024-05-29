@@ -23,6 +23,7 @@ import com.vku.controllers.QRcode;
 import com.vku.dtos.AttendanceQRResponseDTO;
 import com.vku.dtos.ErrorResponse;
 import com.vku.dtos.StudentAttendanceForCourse;
+import com.vku.enums.QR_Parameters;
 import com.vku.models.AttendanceSheet;
 import com.vku.models.Course;
 import com.vku.models.DetailAttendance;
@@ -103,7 +104,8 @@ public class OfficerController {
 			ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 		} catch (Exception e) {
-			ErrorResponse errorResponse = new ErrorResponse("Đã xảy ra lỗi", 500);
+			e.printStackTrace();
+			ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 500);
 //			log.setLog("Sửa thất bại với id: " + officerId + " - " + e.getMessage());
 //			logService.wirteLog(log);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -166,14 +168,14 @@ public class OfficerController {
 		Long courseId = (long) courseIdI;
 		System.out.println("Officer Controler: CourseId =  " + courseId);
 		LocalDateTime attendanceDate = LocalDateTime.now();
-		Boolean checkAttendanced = attendanceSheetService.checkAttendancedToday(Timestamp.valueOf(attendanceDate),
-				courseId);
-		System.out.println("checkAttendance: " + checkAttendanced);
-		if (checkAttendanced) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã tạo điểm danh rồi");
-
-		} 
-		try {
+//		Boolean checkAttendanced = attendanceSheetService.checkAttendancedToday(Timestamp.valueOf(attendanceDate),
+//				courseId);
+//		System.out.println("checkAttendance: " + checkAttendanced);
+//		if (checkAttendanced) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã tạo điểm danh ngày hôm nay rồi");
+//
+//		} 
+		try { 
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -186,7 +188,7 @@ public class OfficerController {
 //			setExtraSheetFalseWithCourseId(courseId);
 			student_CourseService.setExtraSheetWithCourseId(courseId, false);
 			AttendanceSheet attendanceSheetCreated = attendanceSheetService.createAttendanceSheet(attendanceSheet);
-			String QRcodeInfo = courseId + "|" + attendanceDate.format(formatter);
+			String QRcodeInfo = QR_Parameters.ATTENDANCE_QR + "||"+ courseId + "|" + attendanceDate.format(formatter);
 			int expirationHours = 2;
 			String attendanceQRImageBase64 = qrCode.generateQRcodeWithExpirationDays(QRcodeInfo, request,
 					"attendanceQR", expirationHours);

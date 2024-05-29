@@ -1,7 +1,6 @@
 package com.vku.controllers.students;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -15,17 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.vku.controllers.QRcode;
 import com.vku.dtos.AttendanceRequest_StudentDTO;
 import com.vku.dtos.ErrorResponse;
 import com.vku.models.AttendanceSheet;
-import com.vku.models.DetailAttendance;
 import com.vku.models.Student;
-import com.vku.models.Student_Course;
 import com.vku.services.AttendanceSheetService;
-import com.vku.services.DetailAttendanceService;
 import com.vku.services.StudentService;
 import com.vku.services.Student_CourseService;
 
@@ -55,7 +50,7 @@ public class StudentController {
 			String studentCode = attendanceRequest.getStudentCode(); 
 			boolean isValid = qrCode.isQRCodeValid(QRcodeInfo);
 			if(!isValid) {
-				throw new Exception("Time out");
+				throw new Exception("Hết thời hạn điểm danh");
 			}
 			String courseId = QRcodeInfo.trim().split("\\|")[0];
 			boolean check = student_CourseService.setExtraSheetWithCourseIdAndStudentCode(Long.parseLong(courseId),studentCode, true);
@@ -67,7 +62,7 @@ public class StudentController {
 			// TODO: handle exception
 			e.printStackTrace();
 //			System.out.println(e.getMessage());
-			return ResponseEntity.ok(e.getMessage() );
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 			
 		} 
 	}

@@ -43,17 +43,20 @@ public class AttendanceSheetService {
 		attendanceSheetRepository.deleteById(id);
 	}
 
-	public Boolean checkAttendancedToday(Timestamp date, Long courseId ) {
-		
-		
-		int affectedRows = attendanceSheetRepository.countByCourseIdAndTeachDate(courseId, date);
+	public Boolean checkAttendancedToday(Timestamp date, Long courseId) {
+		System.out.println("date :" + date + " - " + date.toString());
+
+		Integer affectedRows = attendanceSheetRepository.countByCourseIdAndTeachDate(courseId, date.toString());
+		if (affectedRows == null)
+			affectedRows = 0;
 		System.out.println("date: " + date + "row: " + affectedRows);
-		System.out.println("cout listAtt: " + attendanceSheetRepository.findByCourseIdAndTeachDate(courseId, date.toString()));
+		System.out.println(
+				"cout listAtt: " + attendanceSheetRepository.findByCourseIdAndTeachDate(courseId, date.toString()));
 		// Nếu row đó có ảnh hưởng̣ câu lệnh thực thi đúng thì return true
-		return affectedRows > 0 ? true: false;
+		return (affectedRows > 0) ? true : false;
 	}
 
-	public  List<AttendanceSheet> getTeachingSchedule( Long courseId) {
+	public List<AttendanceSheet> getTeachingSchedule(Long courseId) {
 		// TODO Auto-generated method stub
 		return attendanceSheetRepository.findByCourseId(courseId);
 	}

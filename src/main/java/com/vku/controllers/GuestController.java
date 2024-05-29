@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.vku.dtos.AttendanceRequest_StudentDTO;
 import com.vku.dtos.QRData;
+import com.vku.enums.QR_Parameters;
 import com.vku.models.Guest;
 import com.vku.services.GuestService;
 
@@ -52,10 +53,10 @@ public class GuestController {
 //		Guest createdGuest = guestService.createGuest(guest);
 		// Trả về link call api gọi đến guest vừa tạo
 
-		String content = String.valueOf(guest.getId());
+		String content = QR_Parameters.GUEST +"||"+  String.valueOf(guest.getId());
 
 //		String qrCodeImageBase64 = qRcode.generateQRcodeWithExpirationDays(content, request, guest.getCccd(), 1);
-		QRData qrData = qRcode.generateQRcodeWithLogoO(content, request, guest.getCccd());
+		QRData qrData = qRcode.generateQRcodeWithLogoO(content, request, guest.getPhoneNumber());
 		guest.setQRCodeImage(qrData.getNameQRcode());
 //		guestService.updateGuest(guest);
 //        return new ResponseEntity<>(createdGuest, HttpStatus.CREATED);
@@ -78,7 +79,7 @@ public class GuestController {
 //				throw new Exception("Time out");
 //			}
 //			String courseId = QRcodeInfo.trim().split("\\|")[0];
-			
+			System.out.println("G-Controller: guest: " + guest);
 			return new ResponseEntity<>(guest, HttpStatus.OK);		
 		}catch (Exception e) {
 			// TODO: handle exception

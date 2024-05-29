@@ -13,8 +13,8 @@ import com.vku.models.AttendanceSheet;
 @Repository
 public interface AttendanceSheetRepository extends JpaRepository<AttendanceSheet, Long> {
 
-	@Query("SELECT COUNT(a) FROM AttendanceSheet a WHERE a.courseId = :courseId AND DATE(a.teachDate) = DATE(:date)  GROUP BY a.courseId, a.teachDate")
-	int countByCourseIdAndTeachDate(@Param("courseId") Long courseId, @Param("date") Timestamp date);    
+	@Query("SELECT COALESCE(COUNT(a), 0) FROM AttendanceSheet a WHERE a.courseId = :courseId AND DATE(a.teachDate) = DATE(:date) GROUP BY a.courseId, a.teachDate")
+	Integer countByCourseIdAndTeachDate(@Param("courseId") Long courseId, @Param("date") String date);  
 	
 	List<AttendanceSheet> findByCourseIdAndTeachDate(Long courseId, String date);
 
