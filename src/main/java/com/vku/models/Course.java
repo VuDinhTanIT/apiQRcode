@@ -2,8 +2,8 @@ package com.vku.models;
 
 import java.sql.Timestamp;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,9 +29,18 @@ public class Course {
 	@Column(name = "course_code")
 	private String courseCode;
 	private String name;
-	private String schoolYear;
+	private String week;
+	private String room;
+//	Thứ trong tuần
+	private String dayOfWeek;
+//	@Nullable
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "school_year_semester")
+	private SchoolYear_Semester schoolYearSemester;
 	private int semester;
-	private boolean status;
+//	Tiết 1-10
+	private String period;
+	private boolean status;	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "lecturer_id")
 	private Officer officer;

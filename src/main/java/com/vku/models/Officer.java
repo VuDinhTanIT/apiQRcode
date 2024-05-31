@@ -53,10 +53,12 @@ public class Officer {
 	public void setPassDefault() {
 		password = PasswordEncryptor.encryptPassword(officerCode + "_" + phoneNumber);
 	}
+	@JsonIgnore
 	public String getDecyptPassWord() {
 		return password != null ? PasswordEncryptor.decryptPassword(password) : "";
 	}
 	public void setPassword(String pass) {
 		password = PasswordEncryptor.encryptPassword(pass);
 	}
+
 }

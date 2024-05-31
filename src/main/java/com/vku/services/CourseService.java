@@ -23,6 +23,7 @@ public class CourseService {
     }
 
     public Course createCourse(Course course) {
+    	course.setId(null);
         return courseRepository.save(course);
     }
 

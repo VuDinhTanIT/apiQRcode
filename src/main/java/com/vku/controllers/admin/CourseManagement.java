@@ -31,6 +31,7 @@ public class CourseManagement {
         if (course == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+//        System.out.println( "CourseManagement " + course.getOfficer().getDecyptPassWord());
         return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
