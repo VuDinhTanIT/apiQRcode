@@ -3,6 +3,8 @@ package com.vku.models;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 //@Table(name = "school_year")
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class SchoolYear_Semester {
 
 	@Id

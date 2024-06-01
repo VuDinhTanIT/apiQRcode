@@ -20,7 +20,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 public class Course {
 
 	@Id

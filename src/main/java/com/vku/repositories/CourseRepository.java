@@ -11,4 +11,6 @@ import com.vku.models.Course;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     // Các phương thức tùy chỉnh khác có thể được khai báo ở đây nếu cần
 	List<Course> findByOfficerId(int officerId);
+
+	List<Course> findByOfficerIdAndDayOfWeek(int officerId, String dayOfWeek);
 }

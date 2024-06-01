@@ -59,8 +59,7 @@ public class OfficerController {
 	private GuestService guestService;
 	@Autowired
 	private CourseService courseService;
-	@Autowired
-	private StudentService studentService;
+
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Officer> getOfficerById(@PathVariable("id") int officerId) {
@@ -154,6 +153,16 @@ public class OfficerController {
 		}
 		return ResponseEntity.ok(listCourses);
 	}
+	@GetMapping(value = { "/todayTeachingSchedule/{officerId}"})
+	public ResponseEntity<List<Course>> getTodayTeachingSchedule(@PathVariable("officerId") int officerId) {
+		
+		List<Course> listCourses = courseService.getTodayTeachingSchedule(officerId);
+		if (listCourses == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return ResponseEntity.ok(listCourses);
+	}
+
 
 	// Lấy thông tin SV từ mã SV
 	@GetMapping("/getStudentByStudentCode/{studentCode}")
