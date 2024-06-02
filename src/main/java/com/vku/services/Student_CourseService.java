@@ -71,4 +71,5 @@ public class Student_CourseService {
 //		System.out.println("StCourseService - list: " + student_CourseRepository.getInfoByCourseId(courseId));
 		return student_CourseRepository.getInfoByCourseId(courseId);
 	}
+	
 }

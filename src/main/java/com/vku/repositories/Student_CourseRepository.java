@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.vku.dtos.StudentAttendanceForCourse;
 import com.vku.dtos.StudentCourseInfoDTO;
+import com.vku.models.Course;
 import com.vku.models.Student_Course;
 
 import jakarta.transaction.Transactional;
@@ -52,5 +53,15 @@ public interface Student_CourseRepository extends JpaRepository<Student_Course, 
 	@Modifying
 	@Query("SELECT d FROM Student_Course d WHERE d.courseId = :courseId AND d.updateTime > :t")
 	List<Student_Course> findByCourseIdAndUpdateTimeThanT(@Param("courseId") Long courseId, @Param("t") Timestamp t);
+	
+//	@Modifying
+//	@Query("Course(c.id, c.courseCode, c.name, c.week, c.room, c.dayOfWeek, c.schoolYearSemester, c.semester, c.period, c.status, c.officer, c.createTime, c.updateTime) " +
+//	        "FROM Student_Course sc " +
+//	        "JOIN Student s ON sc.studentCode = s.studentCode " +
+//	        "JOIN Course c ON c.id =  sc.courseId " +
+//	        "WHERE c.status = true AND sc.studentCode = :studentCode AND sc.courseId = :courseId" )
+////	        "GROUP BY sc.studentCode, s.className, s.name")
+//	List<Course> getCoursesByCourseIdAndStudentCode(Long courseId, String studentCode);
+	
 
 }

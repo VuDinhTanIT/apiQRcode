@@ -88,5 +88,6 @@ public class SchoolYear_SemesterService {
 
 		return currentDate.getDayOfWeek().getValue();
 	}
+	
 
 }

@@ -156,7 +156,7 @@ public class OfficerController {
 	@GetMapping(value = { "/todayTeachingSchedule/{officerId}"})
 	public ResponseEntity<List<Course>> getTodayTeachingSchedule(@PathVariable("officerId") int officerId) {
 		
-		List<Course> listCourses = courseService.getTodayTeachingSchedule(officerId);
+		List<Course> listCourses = courseService.getTodayTeachingScheduleByLecture(officerId);
 		if (listCourses == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

@@ -19,8 +19,10 @@ import com.vku.controllers.QRcode;
 import com.vku.dtos.AttendanceRequest_StudentDTO;
 import com.vku.dtos.ErrorResponse;
 import com.vku.models.AttendanceSheet;
+import com.vku.models.Course;
 import com.vku.models.Student;
 import com.vku.services.AttendanceSheetService;
+import com.vku.services.CourseService;
 import com.vku.services.StudentService;
 import com.vku.services.Student_CourseService;
 
@@ -35,6 +37,8 @@ public class StudentController {
 	private QRcode qrCode;
 	@Autowired
 	private StudentService studentService;
+	@Autowired
+	private CourseService courseService;
 	@Autowired
 	private AttendanceSheetService attendanceSheetService; 
 
@@ -109,4 +113,35 @@ public class StudentController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 	        }
 	    }
+	    @GetMapping("/getCourses/{studentCode}")
+	    public ResponseEntity<List<?>> getCourses(@PathVariable("studentCode") String studentCode) {
+	        try {
+	        	 
+	        	List<Course> courses = courseService.getCourses(studentCode);
+//	            Student student = studentService.getStudentByStudentCode(id);
+	            return new ResponseEntity<>(courses, HttpStatus.OK);
+	        } catch (NoSuchElementException e) {  
+	            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
+//	            return false;
+	        } catch (Exception e) {
+	            ErrorResponse errorResponse = new ErrorResponse("An error occurred", 500);
+//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+	        }
+			return null;
+	    } 
+	    @GetMapping("/getCurrentSchedule/{studentCode}")
+	    public ResponseEntity<?> getCurentSchedule(@PathVariable("studentCode") String studentCode) {
+	        try {
+	        	List<Course> courses = courseService.getTodayTeachingScheduleByStudent(studentCode);
+//	            Student student = studentService.getStudentByStudentCode(id);
+	            return new ResponseEntity<>(courses, HttpStatus.OK);
+	        } catch (NoSuchElementException e) {  
+	            ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), 404);
+	            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	        } catch (Exception e) {
+	            ErrorResponse errorResponse = new ErrorResponse("An error occurred", 500);
+	            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	    } 
 }
+
