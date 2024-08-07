@@ -82,9 +82,8 @@ public class SchoolYear_SemesterService {
 
 		LocalDateTime currentDateNotFormat = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//		LocalDate currentDate = LocalDate.parse(currentDateNotFormat.format(formatter), formatter);
-		LocalDate currentDate = LocalDate.parse("25/05/2024", formatter);
-//        LocalDate currentDate = LocalDate.now().format(formatter);
+		LocalDate currentDate = LocalDate.parse(currentDateNotFormat.format(formatter), formatter);
+//		LocalDate currentDate = LocalDate.parse("25/05/2024", formatter);
 
 		return currentDate.getDayOfWeek().getValue();
 	}

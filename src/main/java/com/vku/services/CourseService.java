@@ -48,7 +48,7 @@ public class CourseService {
 		// TODO Auto-generated method stub
 		int dayOfWeek = schoolYear_SemesterService.getDayOfWeekCurrent();
 		String dayOfWeekStr = String.valueOf(dayOfWeek);
-		dayOfWeekStr = "3";
+//		dayOfWeekStr = "3";
 		List<Course> courses = courseRepository.findByOfficerIdAndDayOfWeek(officerId, dayOfWeekStr);
 //		System.out.println("courseSer - course: " + courses);
 		List<Course> todayTeachingCourses = getTodayTeachingSchedule(courses);
